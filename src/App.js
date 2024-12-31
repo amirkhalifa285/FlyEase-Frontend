@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import FlightsPage from "./pages/FlightsPage";
 import ServicesPage from "./pages/ServicesPage";
+import Map from "./components/Map/map"; // Import the Map component
 import "./App.css";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
                     <nav>
                         <Link to="/flights">Flights</Link>
                         <Link to="/services">Services</Link>
+                        <Link to="/map">Map</Link> {/* Add a link for the Map */}
                     </nav>
                 </header>
 
@@ -22,13 +24,14 @@ function App() {
                     <Routes>
                         <Route path="/flights" element={<FlightsPage />} />
                         <Route path="/services" element={<ServicesPage />} />
+                        <Route path="/map" element={<Map />} /> {/* Add route for the Map */}
                         <Route
                             path="/"
                             element={
                                 <div>
                                     <h2>Welcome to FlyEase!</h2>
                                     <p>
-                                        Use the navigation menu to manage Flights and Services.
+                                        Use the navigation menu to manage Flights, Services, and view the Map.
                                     </p>
                                 </div>
                             }
