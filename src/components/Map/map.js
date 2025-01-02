@@ -1,235 +1,156 @@
 import React, { useEffect, useState } from "react";
-import api from "../../api";
+import api from "../../api"; // Adjust API path
+import "./map.css";
 
-const SCALE = 30; // Scale factor for positioning
-const PADDING = 50;
+const ICONS = {
+    gate: "/icons/gate-icon.svg",
+    security: "/icons/security-icon.svg",
+    restaurant: "/icons/restaurant-icon.svg",
+    default: "/icons/default.svg",
+};
 
-const Legend = () => (
-    <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "20px" }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-                style={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#007bff", // Blue for gates
-                    marginRight: "5px",
-                }}
-            ></div>
-            Gate
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-                style={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#28a745", // Green for lounges
-                    marginRight: "5px",
-                }}
-            ></div>
-            Lounge
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-                style={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "#ffc107", // Yellow for security
-                    marginRight: "5px",
-                }}
-            ></div>
-            Security
-        </div>
-    </div>
-);
+const GRID_SCALE = 50; // Control spacing of the grid
 
 const Map = () => {
     const [mapData, setMapData] = useState({ locations: [], paths: [] });
-    const [highlightedPath, setHighlightedPath] = useState([]);
-    const [sourceId, setSourceId] = useState("");
-    const [destinationId, setDestinationId] = useState("");
+    const [highlightedPath, setHighlightedPath] = useState([]); // Highlighted path
+    const [sourceId, setSourceId] = useState(null);
+    const [destinationId, setDestinationId] = useState(null);
 
-    // Fetch map data and store it in state
     useEffect(() => {
         const fetchMapData = async () => {
             try {
                 const response = await api.get("/map");
-                setMapData(response.data); // Store fetched map data
+                setMapData(response.data);
             } catch (error) {
                 console.error("Error fetching map data:", error);
             }
         };
 
         fetchMapData();
-    }, []); // Fetch map data on component mount
+    }, []);
 
-    // Fetch shortest path when source and destination are selected
-    useEffect(() => {
-        const fetchShortestPath = async () => {
-            if (!sourceId || !destinationId) return; // Do nothing if both IDs are not set
-
-            try {
-                const response = await api.post("/map/navigate", {
-                    source_id: parseInt(sourceId),
-                    destination_id: parseInt(destinationId),
-                });
-
-                console.log("Response from navigate API:", response.data);
-
-                // Map path names back to IDs for rendering logic
-                const pathIDs = mapData.locations
-                    .filter((location) => response.data.path.includes(location.name))
-                    .map((location) => location.id);
-
-                setHighlightedPath(pathIDs); // Store IDs instead of names
-            } catch (error) {
-                console.error("Error fetching shortest path:", error);
-            }
-        };
-
-        fetchShortestPath();
-    }, [sourceId, destinationId, mapData.locations]); // Fetch when sourceId, destinationId, or locations change
-
-    // Reset the map
-    const resetMap = () => {
-        setSourceId("");
-        setDestinationId("");
-        setHighlightedPath([]);
+    const handleIconClick = (id) => {
+        if (!sourceId) {
+            setSourceId(id);
+        } else if (!destinationId) {
+            setDestinationId(id);
+        } else {
+            setSourceId(id);
+            setDestinationId(null);
+            setHighlightedPath([]);
+        }
     };
 
+    const fetchShortestPath = async () => {
+        if (!sourceId || !destinationId) {
+            console.error("Both source and destination must be selected!");
+            return;
+        }
+
+        try {
+            const response = await api.post("/map/navigate", {
+                source_id: sourceId,
+                destination_id: destinationId,
+            });
+            console.log("Shortest Path Response:", response.data.path); // Debug response
+
+            // Map location names in the response to IDs
+            const pathIds = response.data.path
+                .map((name) => mapData.locations.find((loc) => loc.name === name)?.id)
+                .filter((id) => id !== undefined); // Filter out any undefined IDs
+
+            setHighlightedPath(pathIds); // Store path IDs
+        } catch (error) {
+            console.error("Error fetching shortest path:", error);
+        }
+    };
+
+    const getIcon = (type) => ICONS[type] || ICONS.default;
+
+    const isHighlighted = (path) =>
+        highlightedPath.includes(path.source_id) &&
+        highlightedPath.includes(path.destination_id) &&
+        Math.abs(
+            highlightedPath.indexOf(path.source_id) -
+            highlightedPath.indexOf(path.destination_id)
+        ) === 1;
+
     return (
-        <div>
-            <div>
+        <div className="map-container">
+            <div className="controls">
                 <h3>Navigate</h3>
-                <label>
-                    Source:
-                    <select value={sourceId} onChange={(e) => setSourceId(e.target.value)}>
-                        <option value="">Select Source</option>
-                        {mapData.locations.map((location) => (
-                            <option key={location.id} value={location.id}>
-                                {location.name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <label>
-                    Destination:
-                    <select value={destinationId} onChange={(e) => setDestinationId(e.target.value)}>
-                        <option value="">Select Destination</option>
-                        {mapData.locations.map((location) => (
-                            <option key={location.id} value={location.id}>
-                                {location.name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <button onClick={resetMap}
-                    style={{
-                        margin: "10px",
-                        padding: "10px",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                    }}
-                >
-                    Reset Map
-                </button>
+                <p>
+                    Source:{" "}
+                    {sourceId
+                        ? mapData.locations.find((loc) => loc.id === sourceId)?.name
+                        : "None"}
+                </p>
+                <p>
+                    Destination:{" "}
+                    {destinationId
+                        ? mapData.locations.find((loc) => loc.id === destinationId)?.name
+                        : "None"}
+                </p>
+                <button onClick={fetchShortestPath}>Find Path</button>
             </div>
 
-            {/* Add the Legend here */}
-            <Legend />
-
-            <svg
-                width="800"
-                height="800"
-                style={{
-                    border: "2px solid #343a40",
-                    margin: "20px auto",
-                    display: "block",
-                    backgroundColor: "#e9ecef",
-                    borderRadius: "10px",
-                }}
-            >
+            <svg className="map-svg" viewBox={`0 0 1200 800`}>
                 {/* Render Paths */}
                 {mapData.paths.map((path) => {
                     const source = mapData.locations.find((loc) => loc.id === path.source_id);
-                    const destination = mapData.locations.find((loc) => loc.id === path.destination_id);
+                    const destination = mapData.locations.find(
+                        (loc) => loc.id === path.destination_id
+                    );
 
                     if (!source || !destination) return null;
-
-                    const isHighlighted =
-                        highlightedPath.includes(path.source_id) &&
-                        highlightedPath.includes(path.destination_id) &&
-                        Math.abs(highlightedPath.indexOf(path.source_id) - highlightedPath.indexOf(path.destination_id)) === 1;
 
                     return (
                         <line
                             key={path.id}
-                            x1={source.coordinates.x * SCALE + PADDING}
-                            y1={source.coordinates.y * SCALE + PADDING}
-                            x2={destination.coordinates.x * SCALE + PADDING}
-                            y2={destination.coordinates.y * SCALE + PADDING}
-                            stroke={isHighlighted ? "#ff4d4d" : "#b8b8b8"}
-                            strokeWidth={isHighlighted ? "5" : "3"}
-                            strokeDasharray={isHighlighted ? "0" : "6"}
-                            style={{
-                                cursor: "pointer",
-                                transition: "stroke 0.3s, stroke-width 0.3s",
-                            }}
-                            onMouseOver={(e) => e.target.setAttribute("stroke", "orange")}
-                            onMouseOut={(e) => e.target.setAttribute("stroke", isHighlighted ? "#ff4d4d" : "#b8b8b8")}
+                            x1={source.coordinates.x * GRID_SCALE}
+                            y1={source.coordinates.y * GRID_SCALE}
+                            x2={destination.coordinates.x * GRID_SCALE}
+                            y2={destination.coordinates.y * GRID_SCALE}
+                            stroke={isHighlighted(path) ? "blue" : "gray"} // Highlighted in blue
+                            strokeWidth={isHighlighted(path) ? "4" : "2"}
+                            strokeOpacity={isHighlighted(path) ? "1" : "0.3"} // Invisible unless highlighted
                         />
                     );
                 })}
 
-                {/* Render Locations (Nodes) with Labels */}
+                {/* Render Locations */}
                 {mapData.locations.map((location) => (
-                    <g key={location.id}>
-                        <circle
-                            cx={location.coordinates.x * SCALE + PADDING}
-                            cy={location.coordinates.y * SCALE + PADDING}
-                            r="12"
-                            fill={
-                                location.id === parseInt(sourceId)
-                                    ? "#ff0000" // Red for source
-                                    : location.id === parseInt(destinationId)
-                                    ? "#00ff00" // Green for destination
-                                    : location.type === "gate"
-                                    ? "#007bff"
-                                    : location.type === "lounge"
-                                    ? "#28a745"
-                                    : location.type === "security"
-                                    ? "#ffc107"
-                                    : "#6c757d"
-                            }
-                            stroke="black"
-                            strokeWidth="2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                                if (!sourceId) {
-                                    setSourceId(location.id); // Set source if not already set
-                                } else if (!destinationId) {
-                                    setDestinationId(location.id); // Set destination if source is already set
-                                } else {
-                                    setSourceId(location.id); // Reset and start over
-                                    setDestinationId("");
-                                    setHighlightedPath([]);
-                                }
-                            }}
-                        >
-                            <title>{location.name}</title>
-                        </circle>
-                        <text
-                            x={location.coordinates.x * SCALE + PADDING}
-                            y={location.coordinates.y * SCALE + PADDING + 25} // Position below the circle
-                            textAnchor="middle"
-                            fontSize="14"
-                            fill="black"
-                        >
-                            {location.name}
-                        </text>
-                    </g>
+                    <image
+                        key={location.id}
+                        x={location.coordinates.x * GRID_SCALE - 15}
+                        y={location.coordinates.y * GRID_SCALE - 15}
+                        width="30"
+                        height="30"
+                        href={getIcon(location.type)}
+                        onClick={() => handleIconClick(location.id)} // Handle click
+                        style={{
+                            cursor: "pointer",
+                            opacity:
+                                location.id === sourceId || location.id === destinationId
+                                    ? 1
+                                    : 0.8,
+                        }}
+                    />
+                ))}
+
+                {/* Render Labels */}
+                {mapData.locations.map((location) => (
+                    <text
+                        key={`label-${location.id}`}
+                        x={location.coordinates.x * GRID_SCALE}
+                        y={location.coordinates.y * GRID_SCALE + 30}
+                        textAnchor="middle"
+                        fontSize="16"
+                        fill="black"
+                    >
+                        {location.name}
+                    </text>
                 ))}
             </svg>
         </div>
