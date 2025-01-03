@@ -1,0 +1,14 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "react-app",
+    "globals": {
+        "Mappedin": "readonly"
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "no-undef": "error"
+    }
+}

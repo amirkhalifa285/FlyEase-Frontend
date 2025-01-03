@@ -81,13 +81,13 @@ const Map = () => {
             <div className="controls">
                 <h3>Navigate</h3>
                 <p>
-                    Source:{" "}
+                    Source: {" "}
                     {sourceId
                         ? mapData.locations.find((loc) => loc.id === sourceId)?.name
                         : "None"}
                 </p>
                 <p>
-                    Destination:{" "}
+                    Destination: {" "}
                     {destinationId
                         ? mapData.locations.find((loc) => loc.id === destinationId)?.name
                         : "None"}
@@ -96,6 +96,140 @@ const Map = () => {
             </div>
 
             <svg className="map-svg" viewBox={`0 0 1200 800`}>
+                {/* Background Grid */}
+                {Array.from({ length: 25 }).map((_, row) =>
+                    Array.from({ length: 40 }).map((_, col) => (
+                        <rect
+                            key={`${row}-${col}`}
+                            x={col * GRID_SCALE}
+                            y={row * GRID_SCALE}
+                            width={GRID_SCALE}
+                            height={GRID_SCALE}
+                            fill="none"
+                            stroke="#ccc"
+                            strokeWidth="0.5"
+                        />
+                    ))
+                )}
+
+                {/* Defined Zones */}
+                {/* <rect
+                    x={0}
+                    y={0}
+                    width={500}
+                    height={275}
+                    fill="none"
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <rect
+                    x={500}
+                    y={0}
+                    width={500}
+                    height={275}
+                    fill="none"
+                    stroke="black"
+                    strokeWidth="2"
+                /> */}
+
+                {/* Straight Line Example */}
+                <line
+                    x1={1250} // Start X-coordinate
+                    y1={0} // Start Y-coordinate
+                    x2={1250} // End X-coordinate
+                    y2={600} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={1250} // Start X-coordinate
+                    y1={600} // Start Y-coordinate
+                    x2={1050} // End X-coordinate
+                    y2={600} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={1050} // Start X-coordinate
+                    y1={600} // Start Y-coordinate
+                    x2={1050} // End X-coordinate
+                    y2={800} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={150} // Start X-coordinate
+                    y1={250} // Start Y-coordinate
+                    x2={150} // End X-coordinate
+                    y2={450} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={150} // Start X-coordinate
+                    y1={450} // Start Y-coordinate
+                    x2={0} // End X-coordinate
+                    y2={450} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={150} // Start X-coordinate
+                    y1={450} // Start Y-coordinate
+                    x2={550} // End X-coordinate
+                    y2={450} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={950} // Start X-coordinate
+                    y1={450} // Start Y-coordinate
+                    x2={1250} // End X-coordinate
+                    y2={450} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={150} // Start X-coordinate
+                    y1={250} // Start Y-coordinate
+                    x2={0} // End X-coordinate
+                    y2={250} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={525} // Start X-coordinate
+                    y1={0} // Start Y-coordinate
+                    x2={525} // End X-coordinate
+                    y2={100} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={525} // Start X-coordinate
+                    y1={150} // Start Y-coordinate
+                    x2={525} // End X-coordinate
+                    y2={250} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={250} // Start X-coordinate
+                    y1={250} // Start Y-coordinate
+                    x2={750} // End X-coordinate
+                    y2={250} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+                <line
+                    x1={850} // Start X-coordinate
+                    y1={250} // Start Y-coordinate
+                    x2={1250} // End X-coordinate
+                    y2={250} // End Y-coordinate
+                    stroke="black"
+                    strokeWidth="2"
+                />
+
                 {/* Render Paths */}
                 {mapData.paths.map((path) => {
                     const source = mapData.locations.find((loc) => loc.id === path.source_id);

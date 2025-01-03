@@ -27,4 +27,14 @@ text {
     fill: black;
     text-shadow: 1px 1px 2px white; /* Adds a shadow for better readability */
 }
+
+rect {
+    pointer-events: none; /* Prevent interaction with the grid */
+}
+
+.map-svg rect.zone {
+    fill: rgba(0, 0, 0, 0.05); /* Light gray for zones */
+    stroke: black;
+    stroke-width: 2;
+}
         
