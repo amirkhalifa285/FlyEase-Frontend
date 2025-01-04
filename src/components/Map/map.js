@@ -1,48 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Canvas, Line, Circle, Text } from "fabric";
 import api from "../../api"; // Adjust API path
 import "./map.css";
 
-const ICONS = {
-    gate: "/icons/gate-icon.svg",
-    security: "/icons/security-icon.svg",
-    restaurant: "/icons/restaurant-icon.svg",
-    default: "/icons/default.svg",
-};
-
-const GRID_SCALE = 50; // Control spacing of the grid
+const GRID_SCALE = 40; // Updated grid scale
 
 const Map = () => {
-    const [mapData, setMapData] = useState({ locations: [], paths: [] });
-    const [highlightedPath, setHighlightedPath] = useState([]); // Highlighted path
+    const [mapData, setMapData] = useState({ locations: [], paths: [], walls: [] });
     const [sourceId, setSourceId] = useState(null);
     const [destinationId, setDestinationId] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const canvasRef = useRef(null);
 
-    useEffect(() => {
-        const fetchMapData = async () => {
-            try {
-                const response = await api.get("/map");
-                setMapData(response.data);
-            } catch (error) {
-                console.error("Error fetching map data:", error);
-            }
-        };
-
-        fetchMapData();
-    }, []);
-
-    const handleIconClick = (id) => {
-        if (!sourceId) {
-            setSourceId(id);
-        } else if (!destinationId) {
-            setDestinationId(id);
-        } else {
-            setSourceId(id);
-            setDestinationId(null);
-            setHighlightedPath([]);
-        }
-    };
-
-    const fetchShortestPath = async () => {
+    const fetchShortestPath = useCallback(async () => {
         if (!sourceId || !destinationId) {
             console.error("Both source and destination must be selected!");
             return;
@@ -53,28 +23,214 @@ const Map = () => {
                 source_id: sourceId,
                 destination_id: destinationId,
             });
-            console.log("Shortest Path Response:", response.data.path); // Debug response
 
-            // Map location names in the response to IDs
-            const pathIds = response.data.path
-                .map((name) => mapData.locations.find((loc) => loc.name === name)?.id)
-                .filter((id) => id !== undefined); // Filter out any undefined IDs
+            const pathIds = response.data.path.map((locationName) => {
+                const location = mapData.locations.find((loc) => loc.name === locationName);
+                return location ? location.id : null;
+            });
 
-            setHighlightedPath(pathIds); // Store path IDs
+            const validPathSegments = new Set();
+            for (let i = 0; i < pathIds.length - 1; i++) {
+                const current = pathIds[i];
+                const next = pathIds[i + 1];
+                if (current && next) {
+                    validPathSegments.add(`${current}-${next}`);
+                    validPathSegments.add(`${next}-${current}`);
+                }
+            }
+
+            console.log("Valid Path Segments:", validPathSegments);
+
+            canvasRef.current.getObjects("line").forEach((line) => {
+                const segment = `${line.source_id}-${line.destination_id}`;
+                const isInPath = validPathSegments.has(segment);
+
+                line.set({
+                    stroke: isInPath ? "blue" : "gray",
+                    strokeWidth: isInPath ? 4 : 2,
+                });
+            });
+
+            canvasRef.current.renderAll();
         } catch (error) {
             console.error("Error fetching shortest path:", error);
         }
+    }, [sourceId, destinationId, mapData.locations]);
+
+    const clearPath = () => {
+        if (canvasRef.current) {
+            canvasRef.current.getObjects("line").forEach((line) => {
+                line.set({ stroke: "gray", strokeWidth: 2 });
+            });
+            canvasRef.current.renderAll();
+        }
     };
 
-    const getIcon = (type) => ICONS[type] || ICONS.default;
+    const highlightLocation = useCallback(() => {
+        if (canvasRef.current && searchQuery.trim()) {
+            const location = mapData.locations.find(
+                (loc) => loc.name.toLowerCase() === searchQuery.toLowerCase()
+            );
 
-    const isHighlighted = (path) =>
-        highlightedPath.includes(path.source_id) &&
-        highlightedPath.includes(path.destination_id) &&
-        Math.abs(
-            highlightedPath.indexOf(path.source_id) -
-            highlightedPath.indexOf(path.destination_id)
-        ) === 1;
+            if (location) {
+                const highlightCircle = new Circle({
+                    radius: 15,
+                    fill: "rgba(255, 0, 0, 0.5)",
+                    left: location.coordinates.x * GRID_SCALE - 15,
+                    top: location.coordinates.y * GRID_SCALE - 15,
+                    selectable: false,
+                    evented: false,
+                });
+
+                canvasRef.current.add(highlightCircle);
+
+                setTimeout(() => {
+                    canvasRef.current.remove(highlightCircle);
+                    canvasRef.current.renderAll();
+                }, 2000); // Highlight for 2 seconds
+            } else {
+                console.error("Location not found!");
+            }
+        }
+    }, [searchQuery, mapData.locations]);
+
+    // Initialize the Fabric.js canvas
+    useEffect(() => {
+        if (!canvasRef.current) {
+            const newCanvas = new Canvas("mapCanvas", {
+                width: 1200,
+                height: 800,
+                selection: false,
+            });
+            canvasRef.current = newCanvas;
+        }
+
+        return () => {
+            if (canvasRef.current) {
+                canvasRef.current.dispose();
+                canvasRef.current = null;
+            }
+        };
+    }, []);
+
+    const renderMap = useCallback(
+        (canvas, data) => {
+            canvas.clear();
+
+            // Render paths
+            data.paths.forEach((path) => {
+                const source = data.locations.find((loc) => loc.id === path.source_id);
+                const destination = data.locations.find(
+                    (loc) => loc.id === path.destination_id
+                );
+
+                if (source && destination) {
+                    const line = new Line(
+                        [
+                            source.coordinates.x * GRID_SCALE,
+                            source.coordinates.y * GRID_SCALE,
+                            destination.coordinates.x * GRID_SCALE,
+                            destination.coordinates.y * GRID_SCALE,
+                        ],
+                        {
+                            stroke: "gray",
+                            selectable: false,
+                            source_id: path.source_id,
+                            destination_id: path.destination_id,
+                        }
+                    );
+                    canvas.add(line);
+                }
+            });
+
+            // Render locations
+            data.locations.forEach((location) => {
+                const circle = new Circle({
+                    radius: 10,
+                    fill: "blue",
+                    left: location.coordinates.x * GRID_SCALE - 10,
+                    top: location.coordinates.y * GRID_SCALE - 10,
+                    selectable: false,
+                });
+
+                circle.on("mouseover", () => {
+                    const tooltip = new Text(location.name, {
+                        left: location.coordinates.x * GRID_SCALE + 15,
+                        top: location.coordinates.y * GRID_SCALE - 15,
+                        fontSize: 14,
+                        fill: "black",
+                        backgroundColor: "white",
+                    });
+                    canvas.add(tooltip);
+                    circle.tooltip = tooltip;
+                });
+
+                circle.on("mouseout", () => {
+                    if (circle.tooltip) {
+                        canvas.remove(circle.tooltip);
+                        circle.tooltip = null;
+                    }
+                });
+
+                circle.on("mousedown", () => {
+                    if (!sourceId) {
+                        setSourceId(location.id); // Set the source ID
+                        console.log(`Source selected: ${location.id}`);
+                    } else if (!destinationId) {
+                        setDestinationId(location.id); // Set the destination ID
+                        console.log(`Destination selected: ${location.id}`);
+                    } else {
+                        console.log("Both source and destination are already selected. Reset to start over.");
+                    }
+                });
+                canvas.add(circle);
+
+                const label = new Text(location.name, {
+                    left: location.coordinates.x * GRID_SCALE,
+                    top: location.coordinates.y * GRID_SCALE + 15,
+                    fontSize: 12,
+                    textAlign: "center",
+                    selectable: false,
+                });
+                canvas.add(label);
+            });
+
+            // Render walls
+            data.walls.forEach((wall) => {
+                const wallLine = new Line(
+                    [
+                        wall.x1 * GRID_SCALE,
+                        wall.y1 * GRID_SCALE,
+                        wall.x2 * GRID_SCALE,
+                        wall.y2 * GRID_SCALE,
+                    ],
+                    {
+                        stroke: "red",
+                        strokeWidth: 3,
+                        selectable: false,
+                    }
+                );
+                canvas.add(wallLine);
+            });
+        },
+        [sourceId, destinationId]
+    );
+
+    useEffect(() => {
+        const fetchMapData = async () => {
+            try {
+                const response = await api.get("/map");
+                setMapData(response.data);
+                if (canvasRef.current) {
+                    renderMap(canvasRef.current, response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching map data:", error);
+            }
+        };
+
+        fetchMapData();
+    }, [renderMap]);
 
     return (
         <div className="map-container">
@@ -92,201 +248,26 @@ const Map = () => {
                         ? mapData.locations.find((loc) => loc.id === destinationId)?.name
                         : "None"}
                 </p>
+                <input
+                    type="text"
+                    placeholder="Search location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button onClick={highlightLocation}>Search</button>
                 <button onClick={fetchShortestPath}>Find Path</button>
+                <button
+                    onClick={() => {
+                        setSourceId(null);
+                        setDestinationId(null);
+                        clearPath();
+                    }}
+                >
+                    Reset
+                </button>
             </div>
 
-            <svg className="map-svg" viewBox={`0 0 1200 800`}>
-                {/* Background Grid */}
-                {Array.from({ length: 25 }).map((_, row) =>
-                    Array.from({ length: 40 }).map((_, col) => (
-                        <rect
-                            key={`${row}-${col}`}
-                            x={col * GRID_SCALE}
-                            y={row * GRID_SCALE}
-                            width={GRID_SCALE}
-                            height={GRID_SCALE}
-                            fill="none"
-                            stroke="#ccc"
-                            strokeWidth="0.5"
-                        />
-                    ))
-                )}
-
-                {/* Defined Zones */}
-                {/* <rect
-                    x={0}
-                    y={0}
-                    width={500}
-                    height={275}
-                    fill="none"
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <rect
-                    x={500}
-                    y={0}
-                    width={500}
-                    height={275}
-                    fill="none"
-                    stroke="black"
-                    strokeWidth="2"
-                /> */}
-
-                {/* Straight Line Example */}
-                <line
-                    x1={1250} // Start X-coordinate
-                    y1={0} // Start Y-coordinate
-                    x2={1250} // End X-coordinate
-                    y2={600} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={1250} // Start X-coordinate
-                    y1={600} // Start Y-coordinate
-                    x2={1050} // End X-coordinate
-                    y2={600} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={1050} // Start X-coordinate
-                    y1={600} // Start Y-coordinate
-                    x2={1050} // End X-coordinate
-                    y2={800} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={150} // Start X-coordinate
-                    y1={250} // Start Y-coordinate
-                    x2={150} // End X-coordinate
-                    y2={450} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={150} // Start X-coordinate
-                    y1={450} // Start Y-coordinate
-                    x2={0} // End X-coordinate
-                    y2={450} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={150} // Start X-coordinate
-                    y1={450} // Start Y-coordinate
-                    x2={550} // End X-coordinate
-                    y2={450} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={950} // Start X-coordinate
-                    y1={450} // Start Y-coordinate
-                    x2={1250} // End X-coordinate
-                    y2={450} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={150} // Start X-coordinate
-                    y1={250} // Start Y-coordinate
-                    x2={0} // End X-coordinate
-                    y2={250} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={525} // Start X-coordinate
-                    y1={0} // Start Y-coordinate
-                    x2={525} // End X-coordinate
-                    y2={100} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={525} // Start X-coordinate
-                    y1={150} // Start Y-coordinate
-                    x2={525} // End X-coordinate
-                    y2={250} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={250} // Start X-coordinate
-                    y1={250} // Start Y-coordinate
-                    x2={750} // End X-coordinate
-                    y2={250} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-                <line
-                    x1={850} // Start X-coordinate
-                    y1={250} // Start Y-coordinate
-                    x2={1250} // End X-coordinate
-                    y2={250} // End Y-coordinate
-                    stroke="black"
-                    strokeWidth="2"
-                />
-
-                {/* Render Paths */}
-                {mapData.paths.map((path) => {
-                    const source = mapData.locations.find((loc) => loc.id === path.source_id);
-                    const destination = mapData.locations.find(
-                        (loc) => loc.id === path.destination_id
-                    );
-
-                    if (!source || !destination) return null;
-
-                    return (
-                        <line
-                            key={path.id}
-                            x1={source.coordinates.x * GRID_SCALE}
-                            y1={source.coordinates.y * GRID_SCALE}
-                            x2={destination.coordinates.x * GRID_SCALE}
-                            y2={destination.coordinates.y * GRID_SCALE}
-                            stroke={isHighlighted(path) ? "blue" : "gray"} // Highlighted in blue
-                            strokeWidth={isHighlighted(path) ? "4" : "2"}
-                            strokeOpacity={isHighlighted(path) ? "1" : "0.3"} // Invisible unless highlighted
-                        />
-                    );
-                })}
-
-                {/* Render Locations */}
-                {mapData.locations.map((location) => (
-                    <image
-                        key={location.id}
-                        x={location.coordinates.x * GRID_SCALE - 15}
-                        y={location.coordinates.y * GRID_SCALE - 15}
-                        width="30"
-                        height="30"
-                        href={getIcon(location.type)}
-                        onClick={() => handleIconClick(location.id)} // Handle click
-                        style={{
-                            cursor: "pointer",
-                            opacity:
-                                location.id === sourceId || location.id === destinationId
-                                    ? 1
-                                    : 0.8,
-                        }}
-                    />
-                ))}
-
-                {/* Render Labels */}
-                {mapData.locations.map((location) => (
-                    <text
-                        key={`label-${location.id}`}
-                        x={location.coordinates.x * GRID_SCALE}
-                        y={location.coordinates.y * GRID_SCALE + 30}
-                        textAnchor="middle"
-                        fontSize="16"
-                        fill="black"
-                    >
-                        {location.name}
-                    </text>
-                ))}
-            </svg>
+            <canvas id="mapCanvas"></canvas>
         </div>
     );
 };
