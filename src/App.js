@@ -1,43 +1,68 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FlightsPage from "./pages/FlightsPage";
-import Map from "./components/Map/map"; // Import the Map component
+import Map from "./components/Map/map";
+import LoginSignup from "./pages/LoginSignup";
+import Login from './pages/LoginPage';
+import Signup from './pages/SignupPage';
+import UserInterface from "./pages/UserInterface";
 import "./App.css";
+import AdminHomePage from "./pages/AdminHomePage";
+import UserManagementPage from "./pages/UserManagementPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 function App() {
     return (
         <Router>
             <div className="App">
-                {/* Header Section */}
-                <header className="App-header">
-                    <h1>FlyEase</h1>
-                    <nav>
-                        <Link to="/flights">Flights</Link>
-                        <Link to="/map">Map</Link> {/* Add a link for the Map */}
-                    </nav>
-                </header>
+                <Routes>
+                    {/* Default Page */}
+                    <Route path="/" element={<LoginSignup />} />
 
-                {/* Main Content Section */}
-                <main>
-                    <Routes>
-                        <Route path="/flights" element={<FlightsPage />} />
-                        <Route path="/map" element={<Map />} /> {/* Add route for the Map */}
-                        <Route
-                            path="/"
-                            element={
-                                <div>
-                                    <h2>Welcome to FlyEase!</h2>
-                                    <p>
-                                        Use the navigation menu to manage Flights, Services, and view the Map.
-                                    </p>
-                                </div>
-                            }
-                        />
-                    </Routes>
-                </main>
+                    {/* Authentication Pages */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/UserInterface" element={<UserInterface />} />
+                    {/* {admin routes} */}
+                    <Route path="/admin" element={<AdminHomePage />} />
+                    <Route path="/admin/user-management" element={<UserManagementPage />} />
+                    <Route path="/admin/analytics" element={<AnalyticsPage />} />
+
+
+                    {/* Other Pages */}
+                    <Route
+                        path="/flights"
+                        element={
+                            <>
+                                <Header />
+                                <FlightsPage />
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/map"
+                        element={
+                            <>
+                                <Header />
+                                <Map />
+                            </>
+                        }
+                    />
+                </Routes>
             </div>
         </Router>
     );
 }
+
+// Header Component
+const Header = () => (
+    <header className="App-header">
+        <h1>FlyEase</h1>
+        <nav>
+            <a href="/flights">Flights</a>
+            <a href="/map">Map</a>
+        </nav>
+    </header>
+);
 
 export default App;
