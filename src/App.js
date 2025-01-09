@@ -9,6 +9,7 @@ import UserInterface from "./pages/UserInterface";
 import "./App.css";
 import AdminHomePage from "./pages/AdminHomePage";
 import UserManagementPage from "./pages/UserManagementPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 function App() {
     return (
@@ -25,6 +26,8 @@ function App() {
                     {/* {admin routes} */}
                     <Route path="/admin" element={<AdminHomePage />} />
                     <Route path="/admin/user-management" element={<UserManagementPage />} />
+                    <Route path="/admin/analytics" element={<AnalyticsPage />} />
+
 
                     {/* Other Pages */}
                     <Route
