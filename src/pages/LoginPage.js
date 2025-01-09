@@ -91,7 +91,7 @@ const Login = () => {
       if (role === 'service_provider') {
         navigate('/service-provider-interface');
       } else if (role === 'passenger') {
-        navigate('/passenger-interface');
+        navigate('/UserInterface');
       } else {
         alert('Unknown role. Please contact support.');
       }

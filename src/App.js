@@ -5,6 +5,7 @@ import Map from "./components/Map/map";
 import LoginSignup from "./pages/LoginSignup";
 import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
+import UserInterface from "./pages/UserInterface";
 import "./App.css";
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
                     {/* Authentication Pages */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/UserInterface" element={<UserInterface />} />
+
 
                     {/* Other Pages */}
                     <Route
