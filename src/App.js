@@ -8,6 +8,7 @@ import Signup from './pages/SignupPage';
 import UserInterface from "./pages/UserInterface";
 import "./App.css";
 import AdminHomePage from "./pages/AdminHomePage";
+import UserManagementPage from "./pages/UserManagementPage";
 
 function App() {
     return (
@@ -21,7 +22,9 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/UserInterface" element={<UserInterface />} />
+                    {/* {admin routes} */}
                     <Route path="/admin" element={<AdminHomePage />} />
+                    <Route path="/admin/user-management" element={<UserManagementPage />} />
 
                     {/* Other Pages */}
                     <Route

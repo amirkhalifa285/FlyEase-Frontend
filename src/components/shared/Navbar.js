@@ -46,10 +46,10 @@ export default function MenuAppBar() {
             flexGrow: 1,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation(isAdmin ? "/admin" : "/")}
+          onClick={() => handleNavigation(isAdmin ? "/admin" : "/UserInterface")}
         >
           <img
-            src="/logo.jpeg" // Replace with the path to your logo
+            src="/logo.jpeg" 
             alt="FlyEase Logo"
             style={{
               height: "40px",

@@ -13,25 +13,25 @@ const AdminHomePage = () => {
       title: "Manage Flights",
       description: "Add, update, or remove flights from the system.",
       icon: <FaCogs />,
-      navigateTo: "/manage-flights",
+      navigateTo: "/admin/manage-flights",
     },
     {
       title: "User Management",
       description: "View and manage system users.",
       icon: <FaUserShield />,
-      navigateTo: "/user-management",
+      navigateTo: "/admin/user-management",
     },
     {
       title: "View Analytics",
       description: "Access reports and system performance analytics.",
       icon: <FaChartBar />,
-      navigateTo: "/analytics",
+      navigateTo: "/admin/analytics",
     },
     {
       title: "Notifications",
       description: "Review and send system-wide updates.",
       icon: <FaClipboardList />,
-      navigateTo: "/notifications",
+      navigateTo: "/admin/notifications",
     },
   ];
 
