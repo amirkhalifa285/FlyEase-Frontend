@@ -38,7 +38,7 @@ const HomePage = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')", // Replace with your image path
+        backgroundImage: "url('/Homepage.jpeg')", 
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

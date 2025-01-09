@@ -68,7 +68,7 @@ export default function MenuAppBar() {
         </Box>
 
         {/* Desktop Menu */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2, alignItems: "center" }}>
           <Button
             color="inherit"
             sx={{ color: "white" }}
@@ -96,6 +96,14 @@ export default function MenuAppBar() {
             onClick={() => handleNavigation("/interactive-navigation")}
           >
             Interactive Navigation
+          </Button>
+          {/* Logout Button for Desktop */}
+          <Button
+            color="inherit"
+            sx={{ color: "white", fontWeight: "bold" }}
+            onClick={handleLogout}
+          >
+            Logout
           </Button>
         </Box>
 
@@ -131,21 +139,9 @@ export default function MenuAppBar() {
             <MenuItem onClick={() => handleNavigation("/interactive-navigation")}>
               Interactive Navigation
             </MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Box>
-
-        {/* Logout Button */}
-        <Button
-          color="inherit"
-          sx={{
-            color: "white",
-            fontWeight: "bold",
-            ml: { xs: 0, md: 2 }, // Add margin only for larger screens
-          }}
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
       </Toolbar>
     </AppBar>
   );
