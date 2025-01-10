@@ -51,7 +51,7 @@ const FlightTracking = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('/FlightBackground.jpeg')", // Replace with your background image path
+        backgroundImage: "url('/Homepage.jpeg')", // Replace with your background image path
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
