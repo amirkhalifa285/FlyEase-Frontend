@@ -6,6 +6,8 @@ import LoginSignup from "./pages/LoginSignup";
 import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
 import UserInterface from "./pages/UserInterface";
+import FlightTickets from "./pages/FlightTickets";
+import FlightTracking from "./pages/FlightTracking";
 import "./App.css";
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/UserInterface" element={<UserInterface />} />
+                    <Route path="/purchase-tickets" element={<FlightTickets />} />
+                    <Route path="/flight-tracking" element={<FlightTracking/>} />
 
 
                     {/* Other Pages */}

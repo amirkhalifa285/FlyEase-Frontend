@@ -3,7 +3,7 @@ import MenuAppBar from "../components/shared/Navbar";
 import Footer from "../components/shared/Footer"; // Correct case
 import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList } from "react-icons/fa";
+import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -33,12 +33,18 @@ const HomePage = () => {
       icon: <FaMapMarkerAlt />,
       navigateTo: "/interactive-navigation",
     },
+    {
+      title: "Purchase Flight Tickets", // New menu option
+      description: "Find and book your next flight easily.",
+      icon: <FaTicketAlt />,
+      navigateTo: "/purchase-tickets", // Add corresponding route
+    },
   ];
 
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')", 
+        backgroundImage: "url('/Homepage.jpeg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
