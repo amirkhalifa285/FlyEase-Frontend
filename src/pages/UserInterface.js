@@ -4,6 +4,7 @@ import Footer from "../components/shared/Footer"; // Correct case
 import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
+import Breadcrumb from "../components/shared/Breadcrumb"; // Breadcrumb Component
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ const HomePage = () => {
     >
       {/* Navbar */}
       <MenuAppBar />
+      <Breadcrumb />
 
       {/* Content Section */}
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>

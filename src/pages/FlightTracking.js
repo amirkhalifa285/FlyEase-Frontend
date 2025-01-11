@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Grid } from "@mui/material";
 import MenuAppBar from "../components/shared/Navbar"; // Navbar Component
 import Footer from "../components/shared/Footer"; // Footer Component
+import Breadcrumb from "../components/shared/Breadcrumb"; // Breadcrumb Component
+
 
 const flightsData = [
   {
@@ -62,7 +64,7 @@ const FlightTracking = () => {
     >
       {/* Navbar */}
       <MenuAppBar />
-
+      <Breadcrumb />
       {/* Main Content */}
       <Box sx={{ flex: "1", padding: "40px", color: "white" }}>
         <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">

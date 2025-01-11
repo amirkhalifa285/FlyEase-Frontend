@@ -8,6 +8,7 @@ import Signup from './pages/SignupPage';
 import UserInterface from "./pages/UserInterface";
 import FlightTickets from "./pages/FlightTickets";
 import FlightTracking from "./pages/FlightTracking";
+import ServiceBookings from "./pages/SerivceBookings";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/UserInterface" element={<UserInterface />} />
                     <Route path="/purchase-tickets" element={<FlightTickets />} />
                     <Route path="/flight-tracking" element={<FlightTracking/>} />
+                    <Route path="/service-bookings" element={<ServiceBookings/>}/>
 
 
                     {/* Other Pages */}
