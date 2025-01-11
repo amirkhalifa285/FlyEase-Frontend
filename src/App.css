@@ -1,5 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: white; /* White background for the entire project */
+  color: #000000; /* Default text color */
+}
+
 .App {
   text-align: center;
+  background-color: white;
 }
 
 .App-logo {

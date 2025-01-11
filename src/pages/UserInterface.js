@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../components/shared/Footer"; // Correct case
-import { Box, Typography, Grid, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
 import api from "../api";
@@ -59,10 +59,7 @@ const HomePage = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "smoke-white", // Set the page background to white
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -75,9 +72,7 @@ const HomePage = () => {
           <Typography variant="h4" fontWeight="bold" mb={2}>
             Welcome Back, User!
           </Typography>
-          <Typography>
-            Ready to continue your journey? Access your services below.
-          </Typography>
+          <Typography>Ready to continue your journey? Access your services below.</Typography>
         </Box>
 
         {/* Quick Access Section */}
@@ -129,38 +124,53 @@ const HomePage = () => {
           <Typography variant="h5" fontWeight="bold" mb={4}>
             Available Flights
           </Typography>
-          <Table
-            sx={{
-              background: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "10px",
-              overflow: "hidden",
-            }}
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell><b>Airline</b></TableCell>
-                <TableCell><b>Flight Number</b></TableCell>
-                <TableCell><b>Origin</b></TableCell>
-                <TableCell><b>Destination</b></TableCell>
-                <TableCell><b>Departure</b></TableCell>
-                <TableCell><b>Arrival</b></TableCell>
-                <TableCell><b>Status</b></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {flights.map((flight) => (
-                <TableRow key={flight.id}>
-                  <TableCell>{flight.airline_name}</TableCell>
-                  <TableCell>{flight.flight_number}</TableCell>
-                  <TableCell>{flight.origin}</TableCell>
-                  <TableCell>{flight.destination}</TableCell>
-                  <TableCell>{new Date(flight.departure_time).toLocaleString()}</TableCell>
-                  <TableCell>{new Date(flight.arrival_time).toLocaleString()}</TableCell>
-                  <TableCell>{flight.status}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead
+                className="text-xs text-white uppercase"
+                style={{
+                  background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+                }}
+              >
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Airline
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Flight Number
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Origin
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Destination
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Departure
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Arrival
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {flights.map((flight) => (
+                  <tr key={flight.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td className="px-6 py-4">{flight.airline_name}</td>
+                    <td className="px-6 py-4">{flight.flight_number}</td>
+                    <td className="px-6 py-4">{flight.origin}</td>
+                    <td className="px-6 py-4">{flight.destination}</td>
+                    <td className="px-6 py-4">{new Date(flight.departure_time).toLocaleString()}</td>
+                    <td className="px-6 py-4">{new Date(flight.arrival_time).toLocaleString()}</td>
+                    <td className="px-6 py-4">{flight.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Box>
       </Box>
 

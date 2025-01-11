@@ -31,7 +31,12 @@ export default function MenuAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#3b3b3b" }}>
+    <AppBar
+      position="static"
+      sx={{
+        background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+      }}
+    >
       <Toolbar>
         {/* Logo and Title */}
         <Box

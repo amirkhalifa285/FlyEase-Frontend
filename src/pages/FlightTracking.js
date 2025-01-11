@@ -51,10 +51,7 @@ const FlightTracking = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')", // Replace with your background image path
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "white", // Set the page background to white
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",

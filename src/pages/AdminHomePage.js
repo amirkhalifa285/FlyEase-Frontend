@@ -38,10 +38,7 @@ const AdminHomePage = () => {
   return (
     <Box
       sx={{
-        backgroundImage: "url('/AdminBackground.jpeg')", // Replace with admin-specific image if needed
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "white", // Set the page background to white
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
