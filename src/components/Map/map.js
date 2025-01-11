@@ -164,7 +164,7 @@ const Map = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             updateCongestion();
-        }, 30000); // Update every 10 seconds
+        }, 30000); // Update every 30 seconds
 
         return () => clearInterval(interval);
     }, [updateCongestion]);
@@ -220,17 +220,46 @@ const Map = () => {
                     canvas.add(line);
                 }
             });
+            // Define colors for each location category
+            const getLocationColor = (location) => {
+                if (location.name.toLowerCase().includes("gate")) {
+                    return "blue";
+                } else if (location.name.toLowerCase().includes("s.c")) {
+                    return "red";
+                } else if (location.name.toLowerCase().includes("lounge")) {
+                    return "green";
+                } else if (location.name.toLowerCase().includes("restaurant")) {
+                    return "orange";
+                } else if (location.name.toLowerCase().includes("check-in")) {
+                    return "purple";
+                } else if (location.name.toLowerCase().includes("w.c")) {
+                    return "yellow"
+                } else if (location.name.toLowerCase().includes("information")) {
+                    return "brown"
+                } else if (location.name.toLowerCase().includes("baggage claim")) {
+                    return "cyan"
+                } else if (location.name.toLowerCase().includes("departures")) {
+                    return "darkblue"
+                }
+                else {
+                    return "gray"; // Default color for unknown categories
+                }
+            };
 
-            // Render locations
+            // Render locations with category-based colors
             data.locations.forEach((location) => {
+                const color = getLocationColor(location);
+
+                // Create a circle with the appropriate color
                 const circle = new Circle({
                     radius: 10,
-                    fill: "blue",
+                    fill: color,
                     left: location.coordinates.x * GRID_SCALE - 10,
                     top: location.coordinates.y * GRID_SCALE - 10,
                     selectable: false,
                 });
 
+                // Add interactivity for hover (tooltip) and clicks
                 circle.on("mouseover", () => {
                     const tooltip = new Textbox(location.name, {
                         left: location.coordinates.x * GRID_SCALE + 15,
@@ -262,8 +291,10 @@ const Map = () => {
                     }
                 });
 
+                // Add the circle to the canvas
                 canvas.add(circle);
 
+                // Add a label below the circle
                 const label = new Textbox(location.name, {
                     left: location.coordinates.x * GRID_SCALE,
                     top: location.coordinates.y * GRID_SCALE + 15,
@@ -273,6 +304,7 @@ const Map = () => {
                 });
                 canvas.add(label);
             });
+
 
             // Render walls
             data.walls.forEach((wall) => {
@@ -284,7 +316,7 @@ const Map = () => {
                         wall.y2 * GRID_SCALE,
                     ],
                     {
-                        stroke: "red",
+                        stroke: "black",
                         strokeWidth: 3,
                         selectable: false,
                     }
@@ -381,9 +413,56 @@ const Map = () => {
                     />
                 </div>
             </div>
+    
+            {/* Add the legend here */}
+            <div className="location-legend">
+                <h4>Locations</h4>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "blue" }}></div>
+                    Gate
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "red" }}></div>
+                    S.C (Security Check)
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "green" }}></div>
+                    Lounge
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "orange" }}></div>
+                    Restaurant
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "purple" }}></div>
+                    Check-In
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "yellow" }}></div>
+                    W.C (Washroom)
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "brown" }}></div>
+                    Information
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "cyan" }}></div>
+                    Baggage
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "darkblue" }}></div>
+                    Departures
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "gray" }}></div>
+                    Default
+                </div>
+            </div>
+    
             <canvas id="mapCanvas"></canvas>
         </div>
     );
+    
 };
 
 export default Map;

@@ -1,12 +1,13 @@
-import React from "react";
-import MenuAppBar from "../components/shared/Navbar";
+import React, { useEffect, useState } from "react";
 import Footer from "../components/shared/Footer"; // Correct case
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList } from "react-icons/fa";
+import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
+import api from "../api";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [flights, setFlights] = useState([]);
 
   const cards = [
     {
@@ -31,14 +32,34 @@ const HomePage = () => {
       title: "Interactive Navigation",
       description: "Navigate airports with ease.",
       icon: <FaMapMarkerAlt />,
-      navigateTo: "/interactive-navigation",
+      navigateTo: "/map",
+    },
+    {
+      title: "Purchase Flight Tickets", // New menu option
+      description: "Find and book your next flight easily.",
+      icon: <FaTicketAlt />,
+      navigateTo: "/purchase-tickets", // Add corresponding route
     },
   ];
+
+  // Fetch flights from the backend
+  const fetchFlights = async () => {
+    try {
+      const response = await api.get("/flights"); // Replace with the correct API endpoint
+      setFlights(response.data);
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlights();
+  }, []);
 
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')", 
+        backgroundImage: "url('/Homepage.jpeg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -47,9 +68,6 @@ const HomePage = () => {
         flexDirection: "column",
       }}
     >
-      {/* Navbar */}
-      <MenuAppBar />
-
       {/* Content Section */}
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>
         {/* Welcome Section */}
@@ -104,6 +122,45 @@ const HomePage = () => {
               </Grid>
             ))}
           </Grid>
+        </Box>
+
+        {/* Flights Section */}
+        <Box mt={6}>
+          <Typography variant="h5" fontWeight="bold" mb={4}>
+            Available Flights
+          </Typography>
+          <Table
+            sx={{
+              background: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "10px",
+              overflow: "hidden",
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell><b>Airline</b></TableCell>
+                <TableCell><b>Flight Number</b></TableCell>
+                <TableCell><b>Origin</b></TableCell>
+                <TableCell><b>Destination</b></TableCell>
+                <TableCell><b>Departure</b></TableCell>
+                <TableCell><b>Arrival</b></TableCell>
+                <TableCell><b>Status</b></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {flights.map((flight) => (
+                <TableRow key={flight.id}>
+                  <TableCell>{flight.airline_name}</TableCell>
+                  <TableCell>{flight.flight_number}</TableCell>
+                  <TableCell>{flight.origin}</TableCell>
+                  <TableCell>{flight.destination}</TableCell>
+                  <TableCell>{new Date(flight.departure_time).toLocaleString()}</TableCell>
+                  <TableCell>{new Date(flight.arrival_time).toLocaleString()}</TableCell>
+                  <TableCell>{flight.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Box>
       </Box>
 

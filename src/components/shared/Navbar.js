@@ -8,14 +8,9 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useLocation } from "react-router-dom";
 
 export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const location = useLocation();
-
-  // Check if the current route is for admin
-  const isAdmin = location.pathname.startsWith("/admin");
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,7 +31,7 @@ export default function MenuAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: isAdmin ? "#2c3e50" : "#3b3b3b" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#3b3b3b" }}>
       <Toolbar>
         {/* Logo and Title */}
         <Box
@@ -46,10 +41,9 @@ export default function MenuAppBar() {
             flexGrow: 1,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation(isAdmin ? "/admin" : "/UserInterface")}
         >
           <img
-            src="/logo.jpeg" 
+            src="/logo.jpeg" // Replace with the path to your logo
             alt="FlyEase Logo"
             style={{
               height: "40px",
@@ -58,6 +52,7 @@ export default function MenuAppBar() {
               objectFit: "cover",
               marginRight: "10px",
             }}
+            onClick={() => handleNavigation("../../UserInterface")}
           />
           <Typography
             variant="h6"
@@ -68,75 +63,55 @@ export default function MenuAppBar() {
               color: "white",
             }}
           >
-            {isAdmin ? "Admin Dashboard" : "FlyEase"}
+            FlyEase
           </Typography>
         </Box>
 
         {/* Desktop Menu */}
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2, alignItems: "center" }}>
-          {isAdmin ? (
-            <>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/admin/manage-flights")}
-              >
-                Manage Flights
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/admin/user-management")}
-              >
-                User Management
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/admin/analytics")}
-              >
-                Analytics
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white", fontWeight: "bold" }}
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/service-bookings")}
-              >
-                Service Bookings
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/flight-tracking")}
-              >
-                Flight Tracking
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white" }}
-                onClick={() => handleNavigation("/luggage-tracking")}
-              >
-                Luggage Tracking
-              </Button>
-              <Button
-                color="inherit"
-                sx={{ color: "white", fontWeight: "bold" }}
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </>
-          )}
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/service-bookings")}
+          >
+            Service Bookings
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/flight-tracking")}
+          >
+            Flight Tracking
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/luggage-tracking")}
+          >
+            Luggage Tracking
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/map")} // Navigate to the Map component
+          >
+            Interactive Navigation
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/purchase-tickets")} // New option
+          >
+            Purchase Tickets
+          </Button>
+          {/* Logout Button for Desktop */}
+          <Button
+            color="inherit"
+            sx={{ color: "white", fontWeight: "bold" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
         </Box>
 
         {/* Hamburger Menu for Smaller Screens */}
@@ -159,31 +134,21 @@ export default function MenuAppBar() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            {isAdmin ? (
-              <>
-                <MenuItem onClick={() => handleNavigation("/admin/manage-flights")}>
-                  Manage Flights
-                </MenuItem>
-                <MenuItem onClick={() => handleNavigation("/admin/user-management")}>
-                  User Management
-                </MenuItem>
-                <MenuItem onClick={() => handleNavigation("/admin/analytics")}>
-                  Analytics
-                </MenuItem>
-              </>
-            ) : (
-              <>
-                <MenuItem onClick={() => handleNavigation("/service-bookings")}>
-                  Service Bookings
-                </MenuItem>
-                <MenuItem onClick={() => handleNavigation("/flight-tracking")}>
-                  Flight Tracking
-                </MenuItem>
-                <MenuItem onClick={() => handleNavigation("/luggage-tracking")}>
-                  Luggage Tracking
-                </MenuItem>
-              </>
-            )}
+            <MenuItem onClick={() => handleNavigation("/service-bookings")}>
+              Service Bookings
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/flight-tracking")}>
+              Flight Tracking
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/luggage-tracking")}>
+              Luggage Tracking
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/interactive-navigation")}>
+              Interactive Navigation
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/purchase-tickets")}>
+              Purchase Tickets {/* New option */}
+            </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Box>

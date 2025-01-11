@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
-// Styled Components (same as before)
+// Styled Components
 const Body = styled.div`
   height: 100vh;
   display: flex;
@@ -69,7 +69,7 @@ const Button = styled.button`
 `;
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
@@ -77,8 +77,8 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/login', {
-        email,
+      const response = await api.post('/auth/login', {
+        username,
         password,
       });
 
@@ -88,9 +88,9 @@ const Login = () => {
       localStorage.setItem('token', token);
 
       // Redirect based on role
-      if (role === 'service_provider') {
-        navigate('/service-provider-interface');
-      } else if (role === 'passenger') {
+      if (role === 'admin') {
+        navigate('/AdminHomePage');
+      } else if (role === 'traveler') {
         navigate('/UserInterface');
       } else {
         alert('Unknown role. Please contact support.');
@@ -107,10 +107,10 @@ const Login = () => {
         <Title>Login</Title>
         <form onSubmit={handleLogin}>
           <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text" // Corrected type
+            placeholder="Username"
+            value={username} // Fixed value
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <Input

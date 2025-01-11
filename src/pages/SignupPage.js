@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-
+import api from '../api';
+import { useNavigate } from 'react-router-dom';
 // Styled Components
 const Body = styled.div`
   height: 100vh;
@@ -67,15 +68,58 @@ const Button = styled.button`
 `;
 
 const Signup = () => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  //const [role, setRole] = useState("traveler"); // Default role
+  const navigate = useNavigate();
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post("/auth/signup", {
+        username,
+        email,
+        password,
+        role: "traveler",
+      });
+
+      if (response.status === 200) {
+        alert("Signup successful!");
+        navigate("/UserInterface"); // Redirect to UserInterface
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert(error.response?.data?.detail || "Signup failed. Please try again.");
+    }
+  };
+
   return (
     <Body>
       <Container>
         <Title>Sign Up</Title>
-        <form>
-          <Input type="text" placeholder="Full Name" required />
-          <Input type="email" placeholder="Email" required />
-          <Input type="password" placeholder="Password" required />
-          <Input type="password" placeholder="Confirm Password" required />
+        <form onSubmit={handleSignup}>
+          <Input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <Input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <Button type="submit">Sign Up</Button>
         </form>
       </Container>
