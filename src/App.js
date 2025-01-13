@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import FlightsPage from "./pages/FlightsPage";
 import Map from "./components/Map/map";
-import LoginSignup from "./pages/LoginSignup";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SignupPage";
 import UserInterface from "./pages/UserInterface";
@@ -23,7 +22,7 @@ function App() {
             {!noNavbarRoutes.includes(location.pathname) && <MenuAppBar />}
             <Routes>
                 {/* Default Page */}
-                <Route path="/" element={<LoginSignup />} />
+                <Route path="/" element={<Login />} />
 
                 {/* Authentication Pages */}
                 <Route path="/login" element={<Login />} />

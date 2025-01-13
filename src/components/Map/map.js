@@ -32,10 +32,7 @@ const Map = () => {
                 destination_id: destinationId,
             });
 
-            const pathIds = response.data.path.map((locationName) => {
-                const location = mapData.locations.find((loc) => loc.name === locationName);
-                return location ? location.id : null;
-            });
+            const pathIds = response.data.path; // Already a list of IDs
 
             const validPathSegments = new Set();
             for (let i = 0; i < pathIds.length - 1; i++) {
@@ -56,6 +53,7 @@ const Map = () => {
             console.error("Error fetching shortest path:", error);
         }
     }, [sourceId, destinationId, mapData.locations]);
+
 
     const startNavigation = () => {
         if (navigationPath.length === 0) {
@@ -193,7 +191,7 @@ const Map = () => {
 
             canvas.clear();
 
-            // Render paths
+            // Render only highlighted paths
             data.paths.forEach((path) => {
                 const source = data.locations.find((loc) => loc.id === path.source_id);
                 const destination = data.locations.find((loc) => loc.id === path.destination_id);
@@ -202,55 +200,57 @@ const Map = () => {
                     const segment = `${path.source_id}-${path.destination_id}`;
                     const isInPath = highlightedPathSegments.has(segment);
 
-                    const line = new Line(
-                        [
-                            source.coordinates.x * GRID_SCALE,
-                            source.coordinates.y * GRID_SCALE,
-                            destination.coordinates.x * GRID_SCALE,
-                            destination.coordinates.y * GRID_SCALE,
-                        ],
-                        {
-                            stroke: isInPath ? "blue" : "gray",
-                            strokeWidth: isInPath ? 4 : 2,
-                            selectable: false,
-                            source_id: path.source_id,
-                            destination_id: path.destination_id,
-                        }
-                    );
-                    canvas.add(line);
+                    if (isInPath) {
+                        const line = new Line(
+                            [
+                                source.coordinates.x * GRID_SCALE,
+                                source.coordinates.y * GRID_SCALE,
+                                destination.coordinates.x * GRID_SCALE,
+                                destination.coordinates.y * GRID_SCALE,
+                            ],
+                            {
+                                stroke: "black", // Highlighted path color
+                                strokeWidth: 4, // Thicker for visibility
+                                selectable: false,
+                                source_id: path.source_id,
+                                destination_id: path.destination_id,
+                            }
+                        );
+                        canvas.add(line);
+                    }
                 }
             });
-            // Define colors for each location category
-            const getLocationColor = (location) => {
-                if (location.name.toLowerCase().includes("gate")) {
-                    return "blue";
-                } else if (location.name.toLowerCase().includes("s.c")) {
-                    return "red";
-                } else if (location.name.toLowerCase().includes("lounge")) {
-                    return "green";
-                } else if (location.name.toLowerCase().includes("restaurant")) {
-                    return "orange";
-                } else if (location.name.toLowerCase().includes("check-in")) {
-                    return "purple";
-                } else if (location.name.toLowerCase().includes("w.c")) {
-                    return "yellow"
-                } else if (location.name.toLowerCase().includes("information")) {
-                    return "brown"
-                } else if (location.name.toLowerCase().includes("baggage claim")) {
-                    return "cyan"
-                } else if (location.name.toLowerCase().includes("departures")) {
-                    return "darkblue"
+
+            const getLocationColor = (locationType) => {
+                if (typeof locationType !== "string") {
+                    return "gray"; // Default color for invalid types
                 }
-                else {
-                    return "gray"; // Default color for unknown categories
+                switch (locationType.toLowerCase()) {
+                    case 'gate':
+                        return 'blue';
+                    case 'lounge':
+                        return 'green';
+                    case 'wc':
+                        return 'cyan';
+                    case 'check-in':
+                        return 'purple';
+                    case 'security':
+                        return 'red';
+                    case 'restaurant':
+                        return 'orange';
+                    case 'baggage':
+                        return 'brown';
+                    case 'information':
+                        return 'pink';
+                    default:
+                        return 'gray';
                 }
             };
 
             // Render locations with category-based colors
             data.locations.forEach((location) => {
-                const color = getLocationColor(location);
+                const color = getLocationColor(location.type);
 
-                // Create a circle with the appropriate color
                 const circle = new Circle({
                     radius: 10,
                     fill: color,
@@ -287,24 +287,21 @@ const Map = () => {
                         setDestinationId(location.id);
                         console.log(`Destination selected: ${location.id}`);
                     } else {
-                        console.log("Both source and destination are already selected. Reset to start over.");
+                        console.log("Both source and destination selected. Reset to start over.");
                     }
                 });
 
-                // Add the circle to the canvas
                 canvas.add(circle);
 
-                // Add a label below the circle
                 const label = new Textbox(location.name, {
-                    left: location.coordinates.x * GRID_SCALE,
-                    top: location.coordinates.y * GRID_SCALE + 15,
+                    left: location.coordinates.x * GRID_SCALE + 15, // Move text 15px to the right of the circle
+                    top: location.coordinates.y * GRID_SCALE,      // Align text vertically with the circle
                     fontSize: 12,
-                    textAlign: "center",
+                    textAlign: "left",                             // Align text to the left for better readability
                     selectable: false,
                 });
                 canvas.add(label);
             });
-
 
             // Render walls
             data.walls.forEach((wall) => {
@@ -324,7 +321,7 @@ const Map = () => {
                 canvas.add(wallLine);
             });
 
-            // Render moving marker
+            // Render moving marker if navigating
             if (isNavigating && navigationPath.length > 0) {
                 const currentLocation = navigationPath[currentPositionIndex];
 
@@ -335,13 +332,14 @@ const Map = () => {
                     top: currentLocation.coordinates.y * GRID_SCALE - 8,
                     selectable: false,
                     evented: false,
-                    opacity: 50,
+                    opacity: 5.5,
                 });
                 canvas.add(marker);
             }
         },
         [highlightedPathSegments, isNavigating, navigationPath, currentPositionIndex, destinationId, sourceId]
     );
+
 
 
 
@@ -407,13 +405,13 @@ const Map = () => {
                                 congestionLevel.level === "High"
                                     ? "red"
                                     : congestionLevel.level === "Medium"
-                                    ? "yellow"
-                                    : "green",
+                                        ? "yellow"
+                                        : "green",
                         }}
                     />
                 </div>
             </div>
-    
+
             {/* Add the legend here */}
             <div className="location-legend">
                 <h4>Locations</h4>
@@ -423,7 +421,7 @@ const Map = () => {
                 </div>
                 <div className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: "red" }}></div>
-                    S.C (Security Check)
+                    Security
                 </div>
                 <div className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: "green" }}></div>
@@ -443,26 +441,18 @@ const Map = () => {
                 </div>
                 <div className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: "brown" }}></div>
-                    Information
-                </div>
-                <div className="legend-item">
-                    <div className="legend-color" style={{ backgroundColor: "cyan" }}></div>
                     Baggage
                 </div>
                 <div className="legend-item">
-                    <div className="legend-color" style={{ backgroundColor: "darkblue" }}></div>
-                    Departures
-                </div>
-                <div className="legend-item">
-                    <div className="legend-color" style={{ backgroundColor: "gray" }}></div>
-                    Default
+                    <div className="legend-color" style={{ backgroundColor: "pink" }}></div>
+                    Information
                 </div>
             </div>
-    
+
             <canvas id="mapCanvas"></canvas>
         </div>
     );
-    
+
 };
 
 export default Map;
