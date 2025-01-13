@@ -54,7 +54,6 @@ const Map = () => {
         }
     }, [sourceId, destinationId, mapData.locations]);
 
-
     const startNavigation = () => {
         if (navigationPath.length === 0) {
             console.error("No path selected for navigation!");
@@ -70,7 +69,7 @@ const Map = () => {
                 console.log("Navigation Complete!");
             } else {
                 setCurrentPositionIndex(index);
-                index++
+                index++;
             }
         }, 1000); // update position every second
     };
@@ -314,7 +313,7 @@ const Map = () => {
                     ],
                     {
                         stroke: "black",
-                        strokeWidth: 3,
+                        strokeWidth: 0,
                         selectable: false,
                     }
                 );
@@ -340,9 +339,6 @@ const Map = () => {
         [highlightedPathSegments, isNavigating, navigationPath, currentPositionIndex, destinationId, sourceId]
     );
 
-
-
-
     useEffect(() => {
         const fetchMapData = async () => {
             try {
@@ -360,7 +356,8 @@ const Map = () => {
     }, [renderMap]);
 
     return (
-        <div className="map-container">
+        <div className="controls-container">
+            {/* Controls Section */}
             <div className="controls">
                 <h3>Navigate</h3>
                 <p>
@@ -412,7 +409,7 @@ const Map = () => {
                 </div>
             </div>
 
-            {/* Add the legend here */}
+            {/* Legend Section */}
             <div className="location-legend">
                 <h4>Locations</h4>
                 <div className="legend-item">
@@ -449,10 +446,35 @@ const Map = () => {
                 </div>
             </div>
 
-            <canvas id="mapCanvas"></canvas>
+            {/* Map Section */}
+            <div
+                className="map-container"
+                style={{
+                    position: 'relative',
+                    width: '1200px', // Fixed width for map-container
+                    height: '800px', // Fixed height for map-container
+                    margin: '0 auto', // Center the container
+                    backgroundImage: `url('/test_map2-.jpeg')`, // Set background image dynamically
+                    backgroundSize: 'cover', // Scale the image proportionally
+                    backgroundPosition: 'center', // Center the image
+                    backgroundRepeat: 'no-repeat', // Prevent tiling
+                }}
+            >
+                <canvas
+                    id="mapCanvas"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'transparent', // Keep the canvas transparent
+                        zIndex: 2, // Ensure canvas layers above the background
+                    }}
+                ></canvas>
+            </div>
         </div>
     );
-
 };
 
 export default Map;
