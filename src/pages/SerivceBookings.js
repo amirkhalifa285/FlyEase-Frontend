@@ -1,201 +1,66 @@
-import React, { useState } from "react";
-import { Box, Typography, Button, Grid } from "@mui/material";
-import MenuAppBar from "../components/shared/Navbar"; // Navbar Component
-import Footer from "../components/shared/Footer"; // Footer Component
-import Breadcrumb from "../components/shared/Breadcrumb"; // Breadcrumb Component
+// import React, { useState } from "react";
+// import api from "../api";
 
-const servicesData = [
-  {
-    id: 1,
-    name: "Deluxe Hotel",
-    type: "Hotel",
-    description: "5-star luxury hotel with ocean view.",
-    price: 200,
-    location: "Maldives",
-  },
-  {
-    id: 2,
-    name: "Economy Car Rental",
-    type: "Car Rental",
-    description: "Compact car rental with unlimited mileage.",
-    price: 50,
-    location: "New York",
-  },
-  {
-    id: 3,
-    name: "City Tour Package",
-    type: "Attractions",
-    description: "Guided city tour with meals included.",
-    price: 100,
-    location: "Paris",
-  },
-  {
-    id: 4,
-    name: "Luxury Car Rental",
-    type: "Car Rental",
-    description: "Premium SUV with chauffeur service.",
-    price: 300,
-    location: "Dubai",
-  },
-];
+// const ServiceBooking = () => {
+//   const [hotels, setHotels] = useState([]);
+//   const [cityCode, setCityCode] = useState("");
+//   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(false);
 
-const ServiceBookings = () => {
-  const [selectedCategory, setSelectedCategory] = useState(""); // Track selected category
-  const [filteredServices, setFilteredServices] = useState([]); // Filtered services based on category
+//   const fetchHotels = async () => {
+//     setLoading(true);
+//     setError("");
 
-  // Handle Category Selection
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    const filtered = servicesData.filter((service) => service.type === category);
-    setFilteredServices(filtered);
-  };
+//     try {
+//       const response = await api.get(`/services/hotels`, {
+//         params: { city_code: cityCode },
+//       });
+//       setHotels(response.data.data || []); // Assuming `data` contains the hotel list
+//     } catch (err) {
+//       console.error("Error fetching hotels:", err);
+//       setError("Unable to fetch hotels. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  // Handle Booking
-  const handleBooking = (service) => {
-    alert(`Booking Confirmed! You have booked ${service.name} in ${service.location}.`);
-  };
+//   return (
+//     <div className="p-10 bg-gray-100 min-h-screen">
+//       <h1 className="text-4xl font-bold text-center mb-8">Service Booking</h1>
 
-  return (
-    <Box
-      sx={{
-        backgroundImage: "url('/Homepage.jpeg')", // Replace with your background image path
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Navbar */}
-      <MenuAppBar />
+//       <div className="mb-4">
+//         <input
+//           type="text"
+//           placeholder="Enter city code (e.g., NYC)"
+//           value={cityCode}
+//           onChange={(e) => setCityCode(e.target.value)}
+//           className="border p-2 rounded w-full"
+//         />
+//         <button
+//           onClick={fetchHotels}
+//           className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+//         >
+//           Search Hotels
+//         </button>
+//       </div>
 
-      {/* Breadcrumb */}
-      <Breadcrumb />
+//       {loading && <p>Loading hotels...</p>}
+//       {error && <p className="text-red-500">{error}</p>}
+//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//         {hotels.map((hotel) => (
+//           <div key={hotel.hotel.hotelId} className="bg-white p-4 shadow rounded">
+//             <h2 className="text-xl font-bold">{hotel.hotel.name}</h2>
+//             <p>{hotel.hotel.description?.text || "No description available."}</p>
+//             <p>
+//               Address:{" "}
+//               {hotel.hotel.address.lines.join(", ")}, {hotel.hotel.address.cityName}
+//             </p>
+//             <p>Price: ${hotel.offers[0]?.price.total || "N/A"}</p>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
 
-      {/* Main Content */}
-      <Box sx={{ flex: "1", padding: "40px", color: "white" }}>
-        <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">
-          Manage and Book Travel Services
-        </Typography>
-
-        {/* Show Category Selection or Services */}
-        {!selectedCategory ? (
-          <Box textAlign="center" mb={4}>
-            <Typography variant="h5" mb={2}>
-              Choose a Service Category
-            </Typography>
-            <Grid container spacing={4} justifyContent="center">
-              <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={() => handleCategorySelect("Hotel")}
-                >
-                  Hotel Booking
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={() => handleCategorySelect("Car Rental")}
-                >
-                  Car Rental
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={() => handleCategorySelect("Attractions")}
-                >
-                  Attractions
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        ) : (
-          <>
-            {/* Back to Categories Button */}
-            <Box textAlign="left" mb={2}>
-  <Button
-    variant="contained"
-    sx={{
-      backgroundColor: "#4f46e5", // Dark purple background
-      color: "white", // White text
-      fontWeight: "bold", // Bold text
-      "&:hover": {
-        backgroundColor: "#6a11cb", // Bright purple hover effect
-      },
-    }}
-    onClick={() => setSelectedCategory("")}
-  >
-    Back to Categories
-  </Button>
-</Box>
-
-
-            {/* Selected Category Header */}
-            <Typography variant="h5" mb={4} textAlign="center">
-              Available {selectedCategory} Services
-            </Typography>
-
-            {/* Service Cards */}
-            <Grid container spacing={2}>
-              {filteredServices.map((service) => (
-                <Grid item xs={12} sm={6} md={4} key={service.id}>
-                  <Box
-                    sx={{
-                      padding: "20px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#4f46e5",
-                      color: "white",
-                      boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      "&:hover": {
-                        transform: "scale(1.05)",
-                        boxShadow: "0px 8px 16px rgba(0,0,0,0.3)",
-                      },
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight="bold" mb={1}>
-                      {service.name}
-                    </Typography>
-                    <Typography>Description: {service.description}</Typography>
-                    <Typography>Price: ${service.price}</Typography>
-                    <Typography>Location: {service.location}</Typography>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      sx={{
-                        mt: 2,
-                        backgroundColor: "white",
-                        color: "#4f46e5",
-                        "&:hover": {
-                          backgroundColor: "#ffffffcc",
-                        },
-                      }}
-                      onClick={() => handleBooking(service)}
-                    >
-                      Book Now
-                    </Button>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </>
-        )}
-      </Box>
-
-      {/* Footer */}
-      <Footer />
-    </Box>
-  );
-};
-
-export default ServiceBookings;
+// export default ServiceBooking;

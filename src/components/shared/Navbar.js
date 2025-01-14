@@ -31,7 +31,12 @@ export default function MenuAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#3b3b3b" }}>
+    <AppBar
+      position="static"
+      sx={{
+        background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+      }}
+    >
       <Toolbar>
         {/* Logo and Title */}
         <Box
@@ -41,7 +46,6 @@ export default function MenuAppBar() {
             flexGrow: 1,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/")}
         >
           <img
             src="/logo.jpeg" // Replace with the path to your logo
@@ -53,6 +57,7 @@ export default function MenuAppBar() {
               objectFit: "cover",
               marginRight: "10px",
             }}
+            onClick={() => handleNavigation("../../UserInterface")}
           />
           <Typography
             variant="h6"
@@ -93,7 +98,7 @@ export default function MenuAppBar() {
           <Button
             color="inherit"
             sx={{ color: "white" }}
-            onClick={() => handleNavigation("/interactive-navigation")}
+            onClick={() => handleNavigation("/map")} // Navigate to the Map component
           >
             Interactive Navigation
           </Button>

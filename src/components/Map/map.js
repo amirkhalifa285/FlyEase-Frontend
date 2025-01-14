@@ -32,10 +32,7 @@ const Map = () => {
                 destination_id: destinationId,
             });
 
-            const pathIds = response.data.path.map((locationName) => {
-                const location = mapData.locations.find((loc) => loc.name === locationName);
-                return location ? location.id : null;
-            });
+            const pathIds = response.data.path; // Already a list of IDs
 
             const validPathSegments = new Set();
             for (let i = 0; i < pathIds.length - 1; i++) {
@@ -72,7 +69,7 @@ const Map = () => {
                 console.log("Navigation Complete!");
             } else {
                 setCurrentPositionIndex(index);
-                index++
+                index++;
             }
         }, 1000); // update position every second
     };
@@ -164,7 +161,7 @@ const Map = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             updateCongestion();
-        }, 30000); // Update every 10 seconds
+        }, 30000); // Update every 30 seconds
 
         return () => clearInterval(interval);
     }, [updateCongestion]);
@@ -193,7 +190,7 @@ const Map = () => {
 
             canvas.clear();
 
-            // Render paths
+            // Render only highlighted paths
             data.paths.forEach((path) => {
                 const source = data.locations.find((loc) => loc.id === path.source_id);
                 const destination = data.locations.find((loc) => loc.id === path.destination_id);
@@ -202,35 +199,66 @@ const Map = () => {
                     const segment = `${path.source_id}-${path.destination_id}`;
                     const isInPath = highlightedPathSegments.has(segment);
 
-                    const line = new Line(
-                        [
-                            source.coordinates.x * GRID_SCALE,
-                            source.coordinates.y * GRID_SCALE,
-                            destination.coordinates.x * GRID_SCALE,
-                            destination.coordinates.y * GRID_SCALE,
-                        ],
-                        {
-                            stroke: isInPath ? "blue" : "gray",
-                            strokeWidth: isInPath ? 4 : 2,
-                            selectable: false,
-                            source_id: path.source_id,
-                            destination_id: path.destination_id,
-                        }
-                    );
-                    canvas.add(line);
+                    if (isInPath) {
+                        const line = new Line(
+                            [
+                                source.coordinates.x * GRID_SCALE,
+                                source.coordinates.y * GRID_SCALE,
+                                destination.coordinates.x * GRID_SCALE,
+                                destination.coordinates.y * GRID_SCALE,
+                            ],
+                            {
+                                stroke: "black", // Highlighted path color
+                                strokeWidth: 4, // Thicker for visibility
+                                selectable: false,
+                                source_id: path.source_id,
+                                destination_id: path.destination_id,
+                            }
+                        );
+                        canvas.add(line);
+                    }
                 }
             });
 
-            // Render locations
+            const getLocationColor = (locationType) => {
+                if (typeof locationType !== "string") {
+                    return "gray"; // Default color for invalid types
+                }
+                switch (locationType.toLowerCase()) {
+                    case 'gate':
+                        return 'blue';
+                    case 'lounge':
+                        return 'green';
+                    case 'wc':
+                        return 'cyan';
+                    case 'check-in':
+                        return 'purple';
+                    case 'security':
+                        return 'red';
+                    case 'restaurant':
+                        return 'orange';
+                    case 'baggage':
+                        return 'brown';
+                    case 'information':
+                        return 'pink';
+                    default:
+                        return 'gray';
+                }
+            };
+
+            // Render locations with category-based colors
             data.locations.forEach((location) => {
+                const color = getLocationColor(location.type);
+
                 const circle = new Circle({
                     radius: 10,
-                    fill: "blue",
+                    fill: color,
                     left: location.coordinates.x * GRID_SCALE - 10,
                     top: location.coordinates.y * GRID_SCALE - 10,
                     selectable: false,
                 });
 
+                // Add interactivity for hover (tooltip) and clicks
                 circle.on("mouseover", () => {
                     const tooltip = new Textbox(location.name, {
                         left: location.coordinates.x * GRID_SCALE + 15,
@@ -258,17 +286,17 @@ const Map = () => {
                         setDestinationId(location.id);
                         console.log(`Destination selected: ${location.id}`);
                     } else {
-                        console.log("Both source and destination are already selected. Reset to start over.");
+                        console.log("Both source and destination selected. Reset to start over.");
                     }
                 });
 
                 canvas.add(circle);
 
                 const label = new Textbox(location.name, {
-                    left: location.coordinates.x * GRID_SCALE,
-                    top: location.coordinates.y * GRID_SCALE + 15,
+                    left: location.coordinates.x * GRID_SCALE + 15, // Move text 15px to the right of the circle
+                    top: location.coordinates.y * GRID_SCALE,      // Align text vertically with the circle
                     fontSize: 12,
-                    textAlign: "center",
+                    textAlign: "left",                             // Align text to the left for better readability
                     selectable: false,
                 });
                 canvas.add(label);
@@ -284,15 +312,15 @@ const Map = () => {
                         wall.y2 * GRID_SCALE,
                     ],
                     {
-                        stroke: "red",
-                        strokeWidth: 3,
+                        stroke: "black",
+                        strokeWidth: 0,
                         selectable: false,
                     }
                 );
                 canvas.add(wallLine);
             });
 
-            // Render moving marker
+            // Render moving marker if navigating
             if (isNavigating && navigationPath.length > 0) {
                 const currentLocation = navigationPath[currentPositionIndex];
 
@@ -303,15 +331,13 @@ const Map = () => {
                     top: currentLocation.coordinates.y * GRID_SCALE - 8,
                     selectable: false,
                     evented: false,
-                    opacity: 50,
+                    opacity: 5.5,
                 });
                 canvas.add(marker);
             }
         },
         [highlightedPathSegments, isNavigating, navigationPath, currentPositionIndex, destinationId, sourceId]
     );
-
-
 
     useEffect(() => {
         const fetchMapData = async () => {
@@ -330,7 +356,8 @@ const Map = () => {
     }, [renderMap]);
 
     return (
-        <div className="map-container">
+        <div className="controls-container">
+            {/* Controls Section */}
             <div className="controls">
                 <h3>Navigate</h3>
                 <p>
@@ -375,13 +402,77 @@ const Map = () => {
                                 congestionLevel.level === "High"
                                     ? "red"
                                     : congestionLevel.level === "Medium"
-                                    ? "yellow"
-                                    : "green",
+                                        ? "yellow"
+                                        : "green",
                         }}
                     />
                 </div>
             </div>
-            <canvas id="mapCanvas"></canvas>
+
+            {/* Legend Section */}
+            <div className="location-legend">
+                <h4>Locations</h4>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "blue" }}></div>
+                    Gate
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "red" }}></div>
+                    Security
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "green" }}></div>
+                    Lounge
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "orange" }}></div>
+                    Restaurant
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "purple" }}></div>
+                    Check-In
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "yellow" }}></div>
+                    W.C (Washroom)
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "brown" }}></div>
+                    Baggage
+                </div>
+                <div className="legend-item">
+                    <div className="legend-color" style={{ backgroundColor: "pink" }}></div>
+                    Information
+                </div>
+            </div>
+
+            {/* Map Section */}
+            <div
+                className="map-container"
+                style={{
+                    position: 'relative',
+                    width: '1200px', // Fixed width for map-container
+                    height: '800px', // Fixed height for map-container
+                    margin: '0 auto', // Center the container
+                    backgroundImage: `url('/test_map2-.jpeg')`, // Set background image dynamically
+                    backgroundSize: 'cover', // Scale the image proportionally
+                    backgroundPosition: 'center', // Center the image
+                    backgroundRepeat: 'no-repeat', // Prevent tiling
+                }}
+            >
+                <canvas
+                    id="mapCanvas"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'transparent', // Keep the canvas transparent
+                        zIndex: 2, // Ensure canvas layers above the background
+                    }}
+                ></canvas>
+            </div>
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../../api';
+//import api from '../../api';
 
 const AddFlight = () => {
   const [status, setStatus] = useState('');
@@ -8,7 +8,7 @@ const AddFlight = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/flights', { status, gate });
+      //const response = await api.post('/flights', { status, gate });
       alert('Flight added successfully!');
       setStatus('');
       setGate('');

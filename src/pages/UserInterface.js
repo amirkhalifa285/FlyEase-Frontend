@@ -1,13 +1,13 @@
-import React from "react";
-import MenuAppBar from "../components/shared/Navbar";
+import React, { useEffect, useState } from "react";
 import Footer from "../components/shared/Footer"; // Correct case
 import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
-import Breadcrumb from "../components/shared/Breadcrumb"; // Breadcrumb Component
+import api from "../api";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [flights, setFlights] = useState([]);
 
   const cards = [
     {
@@ -32,7 +32,7 @@ const HomePage = () => {
       title: "Interactive Navigation",
       description: "Navigate airports with ease.",
       icon: <FaMapMarkerAlt />,
-      navigateTo: "/interactive-navigation",
+      navigateTo: "/map",
     },
     {
       title: "Purchase Flight Tickets", // New menu option
@@ -42,22 +42,29 @@ const HomePage = () => {
     },
   ];
 
+  // Fetch flights from the backend
+  const fetchFlights = async () => {
+    try {
+      const response = await api.get("/flights"); // Replace with the correct API endpoint
+      setFlights(response.data);
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
   return (
     <Box
       sx={{
-        backgroundImage: "url('/Homepage.jpeg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "smoke-white", // Set the page background to white
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Navbar */}
-      <MenuAppBar />
-      <Breadcrumb />
-
       {/* Content Section */}
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>
         {/* Welcome Section */}
@@ -65,9 +72,7 @@ const HomePage = () => {
           <Typography variant="h4" fontWeight="bold" mb={2}>
             Welcome Back, User!
           </Typography>
-          <Typography>
-            Ready to continue your journey? Access your services below.
-          </Typography>
+          <Typography>Ready to continue your journey? Access your services below.</Typography>
         </Box>
 
         {/* Quick Access Section */}
@@ -112,6 +117,60 @@ const HomePage = () => {
               </Grid>
             ))}
           </Grid>
+        </Box>
+
+        {/* Flights Section */}
+        <Box mt={6}>
+          <Typography variant="h5" fontWeight="bold" mb={4}>
+            Available Flights
+          </Typography>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead
+                className="text-xs text-white uppercase"
+                style={{
+                  background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+                }}
+              >
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Airline
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Flight Number
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Origin
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Destination
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Departure
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Arrival
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {flights.map((flight) => (
+                  <tr key={flight.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td className="px-6 py-4">{flight.airline_name}</td>
+                    <td className="px-6 py-4">{flight.flight_number}</td>
+                    <td className="px-6 py-4">{flight.origin}</td>
+                    <td className="px-6 py-4">{flight.destination}</td>
+                    <td className="px-6 py-4">{new Date(flight.departure_time).toLocaleString()}</td>
+                    <td className="px-6 py-4">{new Date(flight.arrival_time).toLocaleString()}</td>
+                    <td className="px-6 py-4">{flight.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Box>
       </Box>
 

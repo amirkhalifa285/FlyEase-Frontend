@@ -1,67 +1,51 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import FlightsPage from "./pages/FlightsPage";
 import Map from "./components/Map/map";
-import LoginSignup from "./pages/LoginSignup";
-import Login from './pages/LoginPage';
-import Signup from './pages/SignupPage';
+import Login from "./pages/LoginPage";
+import Signup from "./pages/SignupPage";
 import UserInterface from "./pages/UserInterface";
 import FlightTickets from "./pages/FlightTickets";
 import FlightTracking from "./pages/FlightTracking";
-import ServiceBookings from "./pages/SerivceBookings";
+import MenuAppBar from "./components/shared/Navbar"; // Navbar component
 import "./App.css";
 
 function App() {
+    const location = useLocation();
+
+    // Define routes where the Navbar should NOT appear
+    const noNavbarRoutes = ["/login", "/signup", "/"];
+
     return (
-        <Router>
-            <div className="App">
-                <Routes>
-                    {/* Default Page */}
-                    <Route path="/" element={<LoginSignup />} />
+        <div className="App">
+            {/* Conditionally render Navbar */}
+            {!noNavbarRoutes.includes(location.pathname) && <MenuAppBar />}
+            <Routes>
+                {/* Default Page */}
+                <Route path="/" element={<Login />} />
 
-                    {/* Authentication Pages */}
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/UserInterface" element={<UserInterface />} />
-                    <Route path="/purchase-tickets" element={<FlightTickets />} />
-                    <Route path="/flight-tracking" element={<FlightTracking/>} />
-                    <Route path="/service-bookings" element={<ServiceBookings/>}/>
+                {/* Authentication Pages */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
 
+                {/* User Interface and Features */}
+                <Route path="/UserInterface" element={<UserInterface />} />
+                <Route path="/purchase-tickets" element={<FlightTickets />} />
+                <Route path="/flight-tracking" element={<FlightTracking />} />
 
-                    {/* Other Pages */}
-                    <Route
-                        path="/flights"
-                        element={
-                            <>
-                                <Header />
-                                <FlightsPage />
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/map"
-                        element={
-                            <>
-                                <Header />
-                                <Map />
-                            </>
-                        }
-                    />
-                </Routes>
-            </div>
-        </Router>
+                {/* Other Pages */}
+                <Route path="/flights" element={<FlightsPage />} />
+                <Route path="/map" element={<Map />} />
+            </Routes>
+        </div>
     );
 }
 
-// Header Component
-const Header = () => (
-    <header className="App-header">
-        <h1>FlyEase</h1>
-        <nav>
-            <a href="/flights">Flights</a>
-            <a href="/map">Map</a>
-        </nav>
-    </header>
-);
-
-export default App;
+// Wrapper for React Router
+export default function AppWrapper() {
+    return (
+        <Router>
+            <App />
+        </Router>
+    );
+}

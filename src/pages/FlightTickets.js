@@ -1,223 +1,106 @@
-import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Grid } from "@mui/material";
-import MenuAppBar from "../components/shared/Navbar"; // Navbar Component
-import Footer from "../components/shared/Footer"; // Footer Component
-import Breadcrumb from "../components/shared/Breadcrumb"; // Breadcrumb Component
-
-const flightsData = [
-  {
-    id: 1,
-    airline: "Delta Airlines",
-    flightNumber: "DL123",
-    from: "USA",
-    to: "France",
-    departureTime: "2025-01-15T10:00:00",
-    arrivalTime: "2025-01-15T22:00:00",
-    price: 500,
-  },
-  {
-    id: 2,
-    airline: "United Airlines",
-    flightNumber: "UA456",
-    from: "UK",
-    to: "Germany",
-    departureTime: "2025-01-16T08:00:00",
-    arrivalTime: "2025-01-16T12:00:00",
-    price: 300,
-  },
-  {
-    id: 3,
-    airline: "American Airlines",
-    flightNumber: "AA789",
-    from: "Canada",
-    to: "Japan",
-    departureTime: "2025-01-17T14:00:00",
-    arrivalTime: "2025-01-18T08:30:00",
-    price: 1200,
-  },
-  {
-    id: 4,
-    airline: "Lufthansa",
-    flightNumber: "LH321",
-    from: "France",
-    to: "India",
-    departureTime: "2025-01-18T09:00:00",
-    arrivalTime: "2025-01-18T21:00:00",
-    price: 700,
-  },
-  {
-    id: 5,
-    airline: "British Airways",
-    flightNumber: "BA654",
-    from: "UK",
-    to: "USA",
-    departureTime: "2025-01-19T11:00:00",
-    arrivalTime: "2025-01-19T15:00:00",
-    price: 400,
-  },
-];
+import React, { useState, useEffect } from "react";
+import api from "../api";
 
 const FlightTickets = () => {
-  const [filters, setFilters] = useState({
-    from: "",
-    to: "",
-    date: "",
-  });
-  const [filteredFlights, setFilteredFlights] = useState(flightsData); // Display all flights by default
+  const [tickets, setTickets] = useState([]);
+  const [error, setError] = useState("");
 
-  // Handle input changes
-  const handleInputChange = (e) => {
-    setFilters({
-      ...filters,
-      [e.target.name]: e.target.value,
-    });
+  // Fetch tickets from backend
+  const fetchTickets = async () => {
+    try {
+      const response = await api.get("/tickets");
+      setTickets(response.data); // Set fetched tickets
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+      setError("Failed to fetch tickets. Please try again later.");
+    }
   };
 
-  // Filter flights
-  const handleFilter = () => {
-    const filtered = flightsData.filter((flight) => {
-      const matchesFrom = flight.from.toLowerCase().includes(filters.from.toLowerCase());
-      const matchesTo = flight.to.toLowerCase().includes(filters.to.toLowerCase());
-      const matchesDate = filters.date
-        ? flight.departureTime.startsWith(filters.date)
-        : true;
-      return matchesFrom && matchesTo && matchesDate;
-    });
-    setFilteredFlights(filtered);
-  };
-
-  // Handle Booking
-  const handleBooking = (flight) => {
-    // Save the flight number in localStorage
-    localStorage.setItem("bookedFlightNumber", flight.flightNumber);
-    alert(`Booking Confirmed! Your Flight Number is ${flight.flightNumber}. Use it to track your flight.`);
-  };
+  // Fetch tickets on component load
+  useEffect(() => {
+    fetchTickets();
+  }, []);
 
   return (
-    <Box
-      sx={{
-        backgroundImage: "url('/Homepage.jpeg')", // Replace with your background image path
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Navbar */}
-      <MenuAppBar />
-      <Breadcrumb />
-      {/* Main Content */}
-      <Box sx={{ flex: "1", padding: "40px", color: "white" }}>
-        <Typography variant="h4" fontWeight="bold" mb={4} textAlign="center">
-          Search Flights
-        </Typography>
+    <div className="p-10 bg-gray-100 min-h-screen">
+      <h1 className="text-4xl font-bold text-center mb-8">Available Flights</h1>
 
-        {/* Filter Form */}
-        <Box mb={4}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="From (Country)"
-                name="from"
-                variant="outlined"
-                value={filters.from}
-                onChange={handleInputChange}
-                sx={{ backgroundColor: "white" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="To (Country)"
-                name="to"
-                variant="outlined"
-                value={filters.to}
-                onChange={handleInputChange}
-                sx={{ backgroundColor: "white" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                type="date"
-                name="date"
-                variant="outlined"
-                value={filters.date}
-                onChange={handleInputChange}
-                InputLabelProps={{ shrink: true }}
-                sx={{ backgroundColor: "white" }}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2 }}
-            onClick={handleFilter}
+      {error && (
+        <div className="text-red-500 text-center mb-4">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tickets.map((ticket) => (
+          <div
+            key={ticket.id}
+            className="max-w-full bg-white flex flex-col rounded overflow-hidden shadow-lg"
           >
-            Filter Flights
-          </Button>
-        </Box>
-
-        {/* Flight Cards */}
-        <Grid container spacing={2}>
-          {filteredFlights.map((flight) => (
-            <Grid item xs={12} sm={6} md={4} key={flight.id}>
-              <Box
-                sx={{
-                  padding: "20px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#4f46e5",
-                  color: "white",
-                  boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    boxShadow: "0px 8px 16px rgba(0,0,0,0.3)",
-                  },
-                }}
+            {/* Header */}
+            <div className="flex flex-row items-baseline flex-nowrap bg-gray-100 p-2">
+              <svg
+                viewBox="0 0 64 64"
+                className="mt-2 mr-1"
+                style={{ fill: "rgb(102, 102, 102)", height: "0.9rem", width: "0.9rem" }}
               >
-                <Typography variant="h6" fontWeight="bold">
-                  {flight.airline}
-                </Typography>
-                <Typography>Flight: {flight.flightNumber}</Typography>
-                <Typography>From: {flight.from}</Typography>
-                <Typography>To: {flight.to}</Typography>
-                <Typography>
-                  Departure: {new Date(flight.departureTime).toLocaleString()}
-                </Typography>
-                <Typography>
-                  Arrival: {new Date(flight.arrivalTime).toLocaleString()}
-                </Typography>
-                <Typography>Price: ${flight.price}</Typography>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{
-                    mt: 2,
-                    backgroundColor: "white",
-                    color: "#4f46e5",
-                    "&:hover": {
-                      backgroundColor: "#ffffffcc",
-                    },
-                  }}
-                  onClick={() => handleBooking(flight)}
-                >
-                  Book Now
-                </Button>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+                <path d="M43.389 38.269L29.222 61.34a1.152 1.152 0 01-1.064.615H20.99a1.219 1.219 0 01-1.007-.5 1.324 1.324 0 01-.2-1.149L26.2 38.27H11.7l-3.947 6.919a1.209 1.209 0 01-1.092.644H1.285a1.234 1.234 0 01-.895-.392l-.057-.056a1.427 1.427 0 01-.308-1.036L1.789 32 .025 19.656a1.182 1.182 0 01.281-1.009 1.356 1.356 0 01.951-.448l5.4-.027a1.227 1.227 0 01.9.391.85.85 0 01.2.252L11.7 25.73h14.5L19.792 3.7a1.324 1.324 0 01.2-1.149A1.219 1.219 0 0121 2.045h7.168a1.152 1.152 0 011.064.615l14.162 23.071h8.959a17.287 17.287 0 017.839 1.791Q63.777 29.315 64 32q-.224 2.685-3.807 4.478a17.282 17.282 0 01-7.84 1.793h-9.016z"></path>
+              </svg>
+              <h1 className="ml-2 uppercase font-bold text-gray-500">Departure</h1>
+              <p className="ml-2 font-normal text-gray-500">
+                {new Date(ticket.departure_time).toDateString()}
+              </p>
+            </div>
 
-      {/* Footer */}
-      <Footer />
-    </Box>
+            {/* Airline Info */}
+            <div className="mt-2 flex justify-between items-center mx-6">
+              <div className="flex items-center">
+                <img
+                  src={ticket.airline_logo || "/icons/default.png"} // Placeholder for airline logo
+                  alt={ticket.airline_name}
+                  className="w-10 h-10 rounded-full mr-2"
+                />
+                <div>
+                  <p className="font-bold text-gray-800">{ticket.airline_name}</p>
+                  <p className="text-gray-500 text-sm">{ticket.flight_number}</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">Economy</p>
+            </div>
+
+            {/* Flight Details */}
+            <div className="mt-2 flex sm:flex-row mx-6 sm:justify-between flex-wrap">
+              <div className="flex flex-col p-2">
+                <p className="font-bold text-gray-800">From: {ticket.origin}</p>
+                <p className="text-gray-500">
+                  {new Date(ticket.departure_time).toLocaleTimeString()}
+                </p>
+              </div>
+              <div className="flex flex-col p-2">
+                <p className="font-bold text-gray-800">To: {ticket.destination}</p>
+                <p className="text-gray-500">
+                  {new Date(ticket.arrival_time).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-4 bg-gray-100 flex flex-row flex-wrap justify-between items-baseline p-4">
+              <div className="text-sm mx-2 flex flex-col">
+                <p className="font-bold text-gray-800">${ticket.price}</p>
+                <p className="text-xs text-gray-500">Price per ticket</p>
+              </div>
+              <button
+                className="w-32 h-11 rounded flex border-solid border bg-blue-500 text-white justify-center items-center"
+                onClick={() => alert(`Booking flight ${ticket.flight_number}`)}
+              >
+                Book Now
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
