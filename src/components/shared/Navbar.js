@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import '@fontsource/roboto';
 
 export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,7 +65,7 @@ export default function MenuAppBar() {
             component="div"
             sx={{
               fontWeight: "bold",
-              fontFamily: "Arial",
+              fontFamily: "Roboto",
               color: "white",
             }}
           >

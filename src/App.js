@@ -9,6 +9,7 @@ import FlightTickets from "./pages/FlightTickets";
 import FlightTracking from "./pages/FlightTracking";
 import MenuAppBar from "./components/shared/Navbar"; // Navbar component
 import "./App.css";
+import '@fontsource/roboto';
 
 function App() {
     const location = useLocation();
