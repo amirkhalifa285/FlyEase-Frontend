@@ -4,6 +4,7 @@ import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
 import api from "../api";
+import '@fontsource/roboto';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -69,10 +70,29 @@ const HomePage = () => {
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>
         {/* Welcome Section */}
         <Box mb={4}>
-          <Typography variant="h4" fontWeight="bold" mb={2}>
+          {/* Gradient Text for "Welcome Back, User!" */}
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            mb={2}
+            sx={{
+              background: "linear-gradient(to right, #7C3AED, #3B82F6)", 
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
             Welcome Back, User!
           </Typography>
-          <Typography>Ready to continue your journey? Access your services below.</Typography>
+
+          {/* Visible Subtext */}
+          <Typography
+            sx={{
+              color: "#6B7280", // Neutral gray for better visibility
+              fontSize: "16px", // Slightly larger font for readability
+            }}
+          >
+            Ready to continue your journey? Access your services below.
+          </Typography>
         </Box>
 
         {/* Quick Access Section */}

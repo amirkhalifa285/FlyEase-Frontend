@@ -18,6 +18,7 @@ const Footer = () => {
       <Typography
         variant="h6"
         fontWeight="bold"
+        fontFamily="Roboto"
         mb={1}
         sx={{ fontSize: "16px" }}
       >
