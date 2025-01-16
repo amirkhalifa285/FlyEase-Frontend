@@ -1,9 +1,8 @@
 import React from "react";
-import MenuAppBar from "../components/shared/Navbar";
-import Footer from "../components/shared/Footer";
 import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaCogs, FaUserShield, FaChartBar, FaClipboardList } from "react-icons/fa";
+
 
 const AdminHomePage = () => {
   const navigate = useNavigate();
@@ -16,10 +15,10 @@ const AdminHomePage = () => {
       navigateTo: "/admin/manage-flights",
     },
     {
-      title: "User Management",
-      description: "View and manage system users.",
+      title: "Manage Map",
+      description: "View and manage Map Locations.",
       icon: <FaUserShield />,
-      navigateTo: "/admin/user-management",
+      navigateTo: "/admin/Map_Manage",
     },
     {
       title: "View Analytics",
@@ -44,9 +43,7 @@ const AdminHomePage = () => {
         flexDirection: "column",
       }}
     >
-      {/* Navbar */}
-      <MenuAppBar />
-
+     
       {/* Content Section */}
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>
         {/* Welcome Section */}
@@ -103,9 +100,6 @@ const AdminHomePage = () => {
           </Grid>
         </Box>
       </Box>
-
-      {/* Footer */}
-      <Footer />
     </Box>
   );
 };

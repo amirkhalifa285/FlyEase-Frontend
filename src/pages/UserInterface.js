@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Footer from "../components/shared/Footer"; // Correct case
 import { Box, Typography, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaSuitcase, FaMapMarkerAlt, FaClipboardList, FaTicketAlt } from "react-icons/fa"; // Added FaTicketAlt icon
 import api from "../api";
 import '@fontsource/roboto';
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -66,6 +66,7 @@ const HomePage = () => {
         flexDirection: "column",
       }}
     >
+   
       {/* Content Section */}
       <Box sx={{ flex: "1", padding: "40px", color: "white", textAlign: "center" }}>
         {/* Welcome Section */}
@@ -194,8 +195,6 @@ const HomePage = () => {
         </Box>
       </Box>
 
-      {/* Footer */}
-      <Footer />
     </Box>
   );
 };

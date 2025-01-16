@@ -19,8 +19,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import MenuAppBar from "../components/shared/Navbar";
-import Footer from "../components/shared/Footer";
+
+
 
 const dataUserGrowth = [
   { month: "Jan", users: 50 },
@@ -51,8 +51,6 @@ function AnalyticsPage() {
         minHeight: "100vh",
       }}
     >
-      {/* Navbar */}
-      <MenuAppBar />
 
       {/* Content */}
       <Box sx={{ flex: "1", padding: "20px" }}>
@@ -123,8 +121,6 @@ function AnalyticsPage() {
         </Grid>
       </Box>
 
-      {/* Footer */}
-      <Footer />
     </Box>
   );
 }

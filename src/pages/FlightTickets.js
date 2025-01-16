@@ -16,6 +16,12 @@ const FlightTickets = () => {
     }
   };
 
+  const handleBooking = (ticket) => {
+    const message = `Booking Confirmed!\n\nFlight Number: ${ticket.flight_number}\nLuggage ID: ${ticket.luggage_id}`;
+    alert(message);
+  };
+  
+
   // Fetch tickets on component load
   useEffect(() => {
     fetchTickets();
@@ -24,7 +30,6 @@ const FlightTickets = () => {
   return (
     <div className="p-10 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-8">Available Flights</h1>
-
       {error && (
         <div className="text-red-500 text-center mb-4">
           {error}
@@ -92,7 +97,7 @@ const FlightTickets = () => {
               </div>
               <button
                 className="w-32 h-11 rounded flex border-solid border bg-blue-500 text-white justify-center items-center"
-                onClick={() => alert(`Booking flight ${ticket.flight_number}`)}
+                onClick={() => handleBooking(ticket)}
               >
                 Book Now
               </button>
