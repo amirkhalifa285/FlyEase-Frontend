@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Select, MenuItem, FormControl } from "@mui/material";
+import { Box, Typography, Grid, Select, MenuItem, FormControl, TextField, Button } from "@mui/material";
 import axios from 'axios';
 import Hotel from '../components/Hotel/Hotel';
-//import '../components/Hotel/Hotel.css';
-import { FaBed, FaCar, FaUtensils, FaLandmark } from "react-icons/fa";
+//import { FaBed, FaCar, FaUtensils, FaLandmark } from "react-icons/fa";
 
-const icons = {
-  Hotels: <FaBed size={40} />,
-  Cars: <FaCar size={40} />,
-  Food: <FaUtensils size={40} />,
-  Attractions: <FaLandmark size={40} />,
-};
+// const icons = {
+//   Hotels: <FaBed size={40} />,
+//   Cars: <FaCar size={40} />,
+//   Food: <FaUtensils size={40} />,
+//   Attractions: <FaLandmark size={40} />,
+// };
 
 const ServiceBookingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("Hotels");
   const [services, setServices] = useState({
     Hotels: [],
     Cars: [
-      { title: "SUV", description: "Spacious and comfortable for long trips.", price: "$70/day" },
-      { title: "Sedan", description: "Smooth and stylish rides.", price: "$50/day" },
-      { title: "Compact Car", description: "Perfect for city driving.", price: "$30/day" },
+      { title: "SUV", description: "Spacious and comfortable for long trips.\n Provider: Hertz Company", price: "$70/day", image: "/suv.png", openNow: false },
+      { title: "Sedan", description: "Smooth and stylish rides.", price: "$50/day", image: "/sedan.jpg" },
+      { title: "Compact Car", description: "Perfect for city driving.", price: "$30/day", image: "/compact_car.jpeg" },
     ],
     Food: [
       { title: "Gourmet Meal", description: "Exquisite dining experience.", price: "$40/meal" },
@@ -32,34 +31,50 @@ const ServiceBookingPage = () => {
       { title: "Theme Park", description: "Fun-filled day with rides and entertainment.", price: "$80/person" },
     ],
   });
+  //const [hotels, setHotels] = useState([]);
+  const [searchLocation, setSearchLocation] = useState("");
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
   };
 
+  const fetchHotels = async (location = "40.748817,-73.985428", radius = 1000) => {
+    try {
+      const response = await axios.post(`http://localhost:8000/api/hotels/fetch`, {
+        location, // Send location as a string
+        radius,   // Send radius as an integer
+      });
+      const hotelServices = response.data.map((hotel) => ({
+        id: hotel.id,
+        title: hotel.name,
+        description: hotel.address,
+        price: hotel.rating
+          ? `Rating: ${hotel.rating} (${hotel.total_ratings} reviews)`
+          : 'No Ratings',
+        image: hotel.photo_reference,
+        openNow: hotel.open_now,
+      }));
+
+      setServices((prev) => ({ ...prev, Hotels: hotelServices }));
+    } catch (error) {
+      console.error('Error fetching hotels:', error);
+    }
+  };
+
+
   useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/hotels');
-        const hotelServices = response.data.map(hotel => ({
-          id: hotel.id,
-          title: hotel.name,
-          description: hotel.address,
-          price: hotel.rating
-            ? `Rating: ${hotel.rating} (${hotel.total_ratings} reviews)`
-            : 'No Ratings',
-          image: hotel.photo_reference,
-          openNow: hotel.open_now,
-        }));
-
-        setServices(prev => ({ ...prev, Hotels: hotelServices }));
-      } catch (error) {
-        console.error('Error fetching hotels:', error);
-      }
-    };
-
+    // Fetch hotels for the default location on page load
     fetchHotels();
   }, []);
+
+  const handleSearch = () => {
+    if (searchLocation.trim() === "") {
+      alert("Please enter a location!");
+      return;
+    }
+    // Call fetchHotels with the user-entered location
+    fetchHotels(searchLocation);
+  };
 
   return (
     <Box
@@ -97,6 +112,33 @@ const ServiceBookingPage = () => {
         </Select>
       </FormControl>
 
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "30px",
+        }}
+      >
+        <TextField
+          label="Enter Location"
+          variant="outlined"
+          value={searchLocation}
+          onChange={(e) => setSearchLocation(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#6a11cb",
+            color: "#fff",
+            "&:hover": { backgroundColor: "#2575fc" },
+          }}
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
+      </Box>
+
       <Typography
         variant="h4"
         fontWeight="bold"
@@ -111,8 +153,8 @@ const ServiceBookingPage = () => {
       </Typography>
 
       <Grid container spacing={4} justifyContent="center">
-        {services[selectedCategory].map((service) => (
-          <Grid item xs={12} sm={6} md={4} key={service.id}>
+        {services[selectedCategory].map((service, idx) => (
+          <Grid item xs={12} sm={6} md={4} key={idx}>
             <Hotel
               title={service.title}
               description={service.description}
