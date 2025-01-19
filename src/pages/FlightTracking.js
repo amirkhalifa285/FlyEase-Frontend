@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import api from "../api";
 
-
 const FlightTracking = () => {
   const [flightNumber, setFlightNumber] = useState("");
   const [flightDetails, setFlightDetails] = useState(null);
@@ -17,16 +16,16 @@ const FlightTracking = () => {
     setFlightDetails(null);
 
     if (!flightNumber) {
-      setError("Please enter a flight number or luggage ID.");
+      setError("Please enter a flight number.");
       return;
     }
 
     try {
-      const response = await api.get(`/tickets/${flightNumber}`);
+      const response = await api.get(`/flights/track/${flightNumber}`);
       setFlightDetails(response.data);
     } catch (err) {
       console.error("Error fetching flight details:", err);
-      setError("Details not found. Please check your input.");
+      setError("Flight not found. Please check your flight number.");
     }
   };
 
@@ -38,7 +37,7 @@ const FlightTracking = () => {
 
       <Box display="flex" alignItems="center" gap={2} mb={4}>
         <TextField
-          label="Enter Flight Number or Luggage ID"
+          label="Enter Flight Number"
           variant="outlined"
           value={flightNumber}
           onChange={handleInputChange}
@@ -65,8 +64,7 @@ const FlightTracking = () => {
           <Typography>
             Arrival: {new Date(flightDetails.arrival_time).toLocaleString()}
           </Typography>
-          <Typography>Price: ${flightDetails.price}</Typography>
-          <Typography>Luggage ID: {flightDetails.luggage_id}</Typography>
+          <Typography>Status: {flightDetails.status}</Typography>
         </Box>
       )}
     </Box>

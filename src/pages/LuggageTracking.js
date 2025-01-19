@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import api from "../api";
 
-
 const LuggageTracking = () => {
   const [luggageId, setLuggageId] = useState("");
   const [luggageDetails, setLuggageDetails] = useState(null);
@@ -22,7 +21,7 @@ const LuggageTracking = () => {
     }
 
     try {
-      const response = await api.get(`/luggage/${luggageId}`);
+      const response = await api.get(`/luggage/track/${luggageId}`);
       setLuggageDetails(response.data);
     } catch (err) {
       console.error("Error fetching luggage details:", err);
@@ -59,13 +58,6 @@ const LuggageTracking = () => {
           <Typography>Weight: {luggageDetails.weight} kg</Typography>
           <Typography>Status: {luggageDetails.status}</Typography>
           <Typography>Last Location: {luggageDetails.last_location}</Typography>
-          <Typography>
-            Created At: {new Date(luggageDetails.created_at).toLocaleString()}
-          </Typography>
-          <Typography>
-            Updated At: {new Date(luggageDetails.updated_at).toLocaleString()}
-          </Typography>
-          <Typography>Associated Ticket ID: {luggageDetails.ticket_id}</Typography>
         </Box>
       )}
     </Box>
