@@ -106,9 +106,16 @@ export default function MenuAppBar() {
           <Button
             color="inherit"
             sx={{ color: "white" }}
-            onClick={() => handleNavigation("/purchase-tickets")} // New option
+            onClick={() => handleNavigation("/purchase-tickets")}
           >
             Purchase Tickets
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/profile")} // New Profile link
+          >
+            Profile
           </Button>
           {/* Logout Button for Desktop */}
           <Button
@@ -153,7 +160,10 @@ export default function MenuAppBar() {
               Interactive Navigation
             </MenuItem>
             <MenuItem onClick={() => handleNavigation("/purchase-tickets")}>
-              Purchase Tickets {/* New option */}
+              Purchase Tickets
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("/profile")}>
+              Profile {/* New Profile menu item */}
             </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>

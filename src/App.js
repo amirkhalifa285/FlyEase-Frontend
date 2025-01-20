@@ -12,6 +12,7 @@ import ServiceBooking from "./pages/ServiceBooking";
 import AdminHomePage from "./pages/AdminHomePage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import AdminMapManage from "./pages/AdminMapManage";
+import ProfilePage from "./pages/ProfilePage";
 import MenuAppBar from "./components/shared/Navbar"; // Navbar component
 import "./App.css";
 import "@fontsource/roboto";
@@ -45,6 +46,7 @@ function App() {
         <Route path="/flight-tracking" element={<FlightTracking />} />
         <Route path="/luggage-tracking" element={<LuggageTracking />} />
         <Route path="/service-bookings" element={<ServiceBooking />} />
+        <Route path="/profile" element={<ProfilePage />} /> {/* Profile route */}
 
         {/* Admin Pages */}
         <Route path="/admin" element={<AdminHomePage />} />

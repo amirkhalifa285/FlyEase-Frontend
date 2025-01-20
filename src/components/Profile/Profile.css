@@ -1,0 +1,41 @@
+.profile-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .profile-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .user-info,
+  .user-tickets {
+    margin-bottom: 20px;
+  }
+  
+  .user-info h2,
+  .user-tickets h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #444;
+  }
+  
+  .user-tickets ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .user-tickets li {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  

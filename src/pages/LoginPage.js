@@ -9,20 +9,19 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("loginPage");
     try {
       const response = await api.post("/auth/login", {
         username,
         password,
       });
-      console.log("loginPagesucees");
-
-      const { role, token } = response.data;
-
-      // Save token for future authenticated requests
+      //console.log("Login response:", response.data); // Debugging line
+  
+      const { role, access_token: token } = response.data;
+      //console.log("Token received:", token); // Debugging line
+  
       localStorage.setItem("token", token);
-
-      // Redirect based on role
+      //console.log("Token stored in localStorage:", localStorage.getItem("token"));
+  
       if (role === "admin") {
         navigate("/AdminHomePage");
       } else if (role === "traveler") {
