@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import api from "../api";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,18 +16,21 @@ const Login = () => {
         username,
         password,
       });
-      //console.log("Login response:", response.data); // Debugging line
-  
+
       const { role, access_token: token } = response.data;
-      //console.log("Token received:", token); // Debugging line
-  
       localStorage.setItem("token", token);
-      //console.log("Token stored in localStorage:", localStorage.getItem("token"));
-  
+
+      // Update auth context
+      login({
+        username: response.data.username,
+        role: role,
+        token: token
+      });
+
       if (role === "admin") {
-        navigate("/AdminHomePage");
+        navigate("/admin");
       } else if (role === "traveler") {
-        navigate("/UserInterface");
+        navigate("/userinterface");
       } else {
         alert("Unknown role. Please contact support.");
       }

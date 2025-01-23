@@ -8,6 +8,8 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import MailIcon from "@mui/icons-material/Mail";
 import '@fontsource/roboto';
 
 export default function MenuAppBar() {
@@ -22,13 +24,13 @@ export default function MenuAppBar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove token or any authentication logic
-    window.location.href = "/login"; // Redirect to login page
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   const handleNavigation = (path) => {
-    window.location.href = path; // Navigate to the desired path
-    handleMenuClose(); // Close the menu
+    window.location.href = path;
+    handleMenuClose();
   };
 
   return (
@@ -49,7 +51,7 @@ export default function MenuAppBar() {
           }}
         >
           <img
-            src="/logo.jpeg" // Replace with the path to your logo
+            src="/logo.jpeg"
             alt="FlyEase Logo"
             style={{
               height: "40px",
@@ -99,7 +101,7 @@ export default function MenuAppBar() {
           <Button
             color="inherit"
             sx={{ color: "white" }}
-            onClick={() => handleNavigation("/map")} // Navigate to the Map component
+            onClick={() => handleNavigation("/map")}
           >
             Interactive Navigation
           </Button>
@@ -110,14 +112,22 @@ export default function MenuAppBar() {
           >
             Purchase Tickets
           </Button>
+          {/* New Messages Button */}
           <Button
             color="inherit"
             sx={{ color: "white" }}
-            onClick={() => handleNavigation("/profile")} // New Profile link
+            onClick={() => handleNavigation("/messages")}
+            startIcon={<MailIcon />}
+          >
+            Messages
+          </Button>
+          <Button
+            color="inherit"
+            sx={{ color: "white" }}
+            onClick={() => handleNavigation("/profile")}
           >
             Profile
           </Button>
-          {/* Logout Button for Desktop */}
           <Button
             color="inherit"
             sx={{ color: "white", fontWeight: "bold" }}
@@ -162,8 +172,15 @@ export default function MenuAppBar() {
             <MenuItem onClick={() => handleNavigation("/purchase-tickets")}>
               Purchase Tickets
             </MenuItem>
+            {/* New Messages Menu Item */}
+            <MenuItem onClick={() => handleNavigation("/messages")}>
+              <ListItemIcon>
+                <MailIcon fontSize="small" />
+              </ListItemIcon>
+              Messages
+            </MenuItem>
             <MenuItem onClick={() => handleNavigation("/profile")}>
-              Profile {/* New Profile menu item */}
+              Profile
             </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>

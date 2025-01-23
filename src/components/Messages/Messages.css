@@ -1,0 +1,51 @@
+/* src/components/Messages/Messages.css */
+.messages-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .messages-list {
+    margin-top: 20px;
+  }
+  
+  .message-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    border-left: 4px solid #007bff;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .message-item.unread {
+    border-left-color: #28a745;
+  }
+  
+  .message-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .message-content p {
+    margin: 0;
+    color: #333;
+  }
+  
+  .message-content small {
+    color: #666;
+    display: block;
+    margin-top: 5px;
+  }
+  
+  .unread-badge {
+    background: #28a745;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    float: right;
+  }

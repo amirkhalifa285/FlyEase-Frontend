@@ -18,7 +18,7 @@ const AdminHomePage = () => {
       title: "Manage Map",
       description: "View and manage Map Locations.",
       icon: <FaUserShield />,
-      navigateTo: "/admin/Map_Manage",
+      navigateTo: "/admin/map-manage",
     },
     {
       title: "View Analytics",

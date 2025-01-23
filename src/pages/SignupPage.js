@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Add this
 import api from "../api";
 
 const SignupPage = () => {
@@ -7,6 +8,7 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // Add this
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -15,13 +17,16 @@ const SignupPage = () => {
         username,
         email,
         password,
-        role: "traveler", // Default role
+        role: "traveler",
       });
 
-      if (response.status === 200) {
-        alert("Signup successful!");
-        navigate("/UserInterface"); // Redirect to UserInterface
-      }
+      const { access_token: token, username: responseUsername, role } = response.data;
+
+      // Save token and update auth state
+      localStorage.setItem("token", token);
+      login({ username: responseUsername, role, token });
+
+      navigate("/userinterface"); // Use lowercase consistently
     } catch (error) {
       console.error("Signup error:", error);
       alert(error.response?.data?.detail || "Signup failed. Please try again.");

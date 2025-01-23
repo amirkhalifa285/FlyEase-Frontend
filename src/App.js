@@ -13,13 +13,18 @@ import AdminHomePage from "./pages/AdminHomePage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import AdminMapManage from "./pages/AdminMapManage";
 import ProfilePage from "./pages/ProfilePage";
-import MenuAppBar from "./components/shared/Navbar"; // Navbar component
+import MenuAppBar from "./components/shared/Navbar";
 import "./App.css";
 import "@fontsource/roboto";
 import Breadcrumb from "./components/shared/Breadcrumb";
-import Footer from "./components/shared/Footer"
+import Footer from "./components/shared/Footer";
 import ManageFlights from "./pages/ManageFlights";
-
+import MessagesPage from "./pages/MessagesPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useWebSocket from "./hooks/useWebSocket";
+import ProtectedRoute from "./components/ProtectedRoute"
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   const location = useLocation();
@@ -27,38 +32,57 @@ function App() {
   // Define routes where the Navbar should NOT appear
   const noNavbarRoutes = ["/login", "/signup", "/"];
 
+  // Initialize WebSocket connection
+  useWebSocket();
+
   return (
     <div className="App">
+      {/* Toast Notification Container */}
+      <ToastContainer position="bottom-right" autoClose={3000} />
+
       {/* Conditionally render Navbar */}
       {!noNavbarRoutes.includes(location.pathname) && <MenuAppBar />}
       {!noNavbarRoutes.includes(location.pathname) && <Breadcrumb />}
-      <Routes>
-        {/* Default Page */}
-        <Route path="/" element={<Login />} />
 
-        {/* Authentication Pages */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+      {/* Main Content Area */}
+      <div className="main-content">
+        <Routes>
+          {/* Default Page */}
+          <Route path="/" element={<Login />} />
 
-        {/* User Features */}
-        <Route path="/UserInterface" element={<UserInterface />} />
-        <Route path="/purchase-tickets" element={<FlightTickets />} />
-        <Route path="/flight-tracking" element={<FlightTracking />} />
-        <Route path="/luggage-tracking" element={<LuggageTracking />} />
-        <Route path="/service-bookings" element={<ServiceBooking />} />
-        <Route path="/profile" element={<ProfilePage />} /> {/* Profile route */}
+          {/* Authentication Pages */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-        {/* Admin Pages */}
-        <Route path="/admin" element={<AdminHomePage />} />
-        <Route path="/admin/analytics" element={<AnalyticsPage />} />
-        <Route path="/admin/Map_Manage" element={<AdminMapManage />} />
-        <Route path="/admin/manage-flights" element={<ManageFlights />} />
+          {/* User Features */}
+          <Route path="/UserInterface" element={<UserInterface />} />
+          <Route path="/purchase-tickets" element={<FlightTickets />} />
+          <Route path="/flight-tracking" element={<FlightTracking />} />
+          <Route path="/luggage-tracking" element={<LuggageTracking />} />
+          <Route path="/service-bookings" element={<ServiceBooking />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/messages" element={<MessagesPage />} />
 
+          {/* Admin Pages */}
+          <Route
+           path="/admin"
+           element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminHomePage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/admin/analytics" element={<AnalyticsPage />} />
+          <Route path="/admin/map-manage" element={<AdminMapManage />} />
+          <Route path="/admin/manage-flights" element={<ManageFlights />} />
 
-        {/* Other Pages */}
-        <Route path="/flights" element={<FlightsPage />} />
-        <Route path="/map" element={<Map />} />
-      </Routes>
+          {/* Other Pages */}
+          <Route path="/flights" element={<FlightsPage />} />
+          <Route path="/map" element={<Map />} />
+        </Routes>
+      </div>
+
+      {/* Footer */}
       <Footer />
     </div>
   );
@@ -68,7 +92,9 @@ function App() {
 export default function AppWrapper() {
   return (
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
   );
 }

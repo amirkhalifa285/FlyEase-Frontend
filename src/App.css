@@ -5,15 +5,22 @@
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background-color: white; /* White background for the entire project */
-  color: #000000; /* Default text color */
-}
-
-.App {
-  text-align: center;
   background-color: white;
+  color: #000000;
 }
 
+/* New layout styles */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
+}
+
+.main-content {
+  flex: 1; /* Pushes footer to bottom */
+}
+
+/* Existing styles below */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
