@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 const useWebSocket = () => {
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000/ws/notifications");
+    const socket = new WebSocket("ws://https://flyease-backend-production.up.railway.app/ws/notifications");
 
     socket.onmessage = (event) => {
       const message = event.data;

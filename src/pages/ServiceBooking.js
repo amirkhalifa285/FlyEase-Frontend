@@ -40,7 +40,7 @@ const ServiceBookingPage = () => {
 
   const fetchHotels = async (location = "40.748817,-73.985428", radius = 1000) => {
     try {
-      const response = await axios.post(`http://localhost:8000/api/hotels/fetch`, {
+      const response = await axios.post(`https://flyease-backend-production.up.railway.app/api/hotels/fetch`, {
         location, // Send location as a string
         radius,   // Send radius as an integer
       });
