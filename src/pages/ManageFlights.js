@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import api from "../api";
 
 const ManageFlights = () => {
@@ -43,7 +55,8 @@ const ManageFlights = () => {
   const handleSave = async () => {
     try {
       if (currentFlight) {
-        await api.put(`/admin/flights/${currentFlight.id}`, newFlight);
+        // Use flight_number for the PUT request
+        await api.put(`/admin/flights/${currentFlight.flight_number}`, newFlight);
       } else {
         await api.post("/admin/flights", newFlight);
       }
@@ -73,9 +86,9 @@ const ManageFlights = () => {
   };
 
   // Delete flight
-  const handleDelete = async (id) => {
+  const handleDelete = async (flight_number) => {
     try {
-      await api.delete(`/admin/flights/${id}`);
+      await api.delete(`/admin/flights/${flight_number}`);
       fetchFlights();
     } catch (err) {
       console.error("Error deleting flight:", err);
@@ -131,7 +144,7 @@ const ManageFlights = () => {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => handleDelete(flight.id)}
+                  onClick={() => handleDelete(flight.flight_number)}
                 >
                   Delete
                 </Button>
