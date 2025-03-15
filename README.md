@@ -3,8 +3,8 @@
 ## Project Repositories
 
 This project consists of two separate repositories:
-- Backend repository: [Your-Backend-Repository-URL]
-- Frontend repository: [Your-Frontend-Repository-URL]
+- Backend repository: https://github.com/amirkhalifa285/FlyEase-Backend
+- Frontend repository: https://github.com/amirkhalifa285/FlyEase-Frontend
 
 ## Prerequisites
 
