@@ -35,9 +35,16 @@ const ManageFlights = () => {
     try {
       const response = await api.get("/admin/flights");
       setFlights(response.data);
+      setError("");
     } catch (err) {
       console.error("Error fetching flights:", err);
-      setError("Failed to load flights. Please try again.");
+      if (err.response?.status === 401) {
+        setError("Unauthorized. Please log in again.");
+      } else if (err.response?.status === 403) {
+        setError("Access denied. Admin privileges required.");
+      } else {
+        setError("Failed to load flights. Please try again.");
+      }
     }
   };
 
@@ -55,16 +62,23 @@ const ManageFlights = () => {
   const handleSave = async () => {
     try {
       if (currentFlight) {
-        // Use flight_number for the PUT request
-        await api.put(`/admin/flights/${currentFlight.flight_number}`, newFlight);
+        // Use flight id for the PUT request
+        await api.put(`/admin/flights/${currentFlight.id}`, newFlight);
       } else {
         await api.post("/admin/flights", newFlight);
       }
       setOpenDialog(false);
+      setError("");
       fetchFlights();
     } catch (err) {
       console.error("Error saving flight:", err);
-      setError("Failed to save flight. Please try again.");
+      if (err.response?.status === 401) {
+        setError("Unauthorized. Please log in again.");
+      } else if (err.response?.status === 403) {
+        setError("Access denied. Admin privileges required.");
+      } else {
+        setError("Failed to save flight. Please try again.");
+      }
     }
   };
 
@@ -86,13 +100,20 @@ const ManageFlights = () => {
   };
 
   // Delete flight
-  const handleDelete = async (flight_number) => {
+  const handleDelete = async (flightId) => {
     try {
-      await api.delete(`/admin/flights/${flight_number}`);
+      await api.delete(`/admin/flights/${flightId}`);
+      setError("");
       fetchFlights();
     } catch (err) {
       console.error("Error deleting flight:", err);
-      setError("Failed to delete flight. Please try again.");
+      if (err.response?.status === 401) {
+        setError("Unauthorized. Please log in again.");
+      } else if (err.response?.status === 403) {
+        setError("Access denied. Admin privileges required.");
+      } else {
+        setError("Failed to delete flight. Please try again.");
+      }
     }
   };
 
@@ -144,7 +165,7 @@ const ManageFlights = () => {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => handleDelete(flight.flight_number)}
+                  onClick={() => handleDelete(flight.id)}
                 >
                   Delete
                 </Button>
