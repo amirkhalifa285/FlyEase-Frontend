@@ -38,20 +38,19 @@ const ServiceBookingPage = () => {
     setSelectedCategory(event.target.value);
   };
 
-  const fetchHotels = async (location = "40.748817,-73.985428", radius = 1000) => {
+  const fetchHotels = async (location = "New York", radius = 5000) => {
     try {
-      const response = await axios.post(`https://flyease-backend-production.up.railway.app/api/hotels/fetch`, {
-        location, // Send location as a string
-        radius,   // Send radius as an integer
+      const response = await axios.get(`https://flyease-backend-production.up.railway.app/api/hotels`, {
+        params: { location, radius }
       });
       const hotelServices = response.data.map((hotel) => ({
-        id: hotel.id,
+        id: hotel.place_id,
         title: hotel.name,
         description: hotel.address,
         price: hotel.rating
           ? `Rating: ${hotel.rating} (${hotel.total_ratings} reviews)`
           : 'No Ratings',
-        image: hotel.photo_reference,
+        image: hotel.photo_url,
         openNow: hotel.open_now,
       }));
 
